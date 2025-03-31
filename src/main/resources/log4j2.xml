@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
+    <Properties>
+        <property name="filePattern">%d{yyyy-MM-dd}</property>
+    </Properties>
+    <Appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%highlight{[%d{HH:mm:ss.SSS}] &lt;%logger{36}&gt; [%level]: %msg%n%throwable}{
+                FATAL=red blink,
+                ERROR=red,
+                WARN=yellow,
+                INFO=green,
+                DEBUG=cyan,
+                TRACE=magenta
+            }" disableAnsi="false" />
+        </Console>
+        <RollingFile name="RollingFile" filePattern="logs/LOG-${filePattern}.txt">
+            <PatternLayout pattern="[%d{HH:mm:ss.SSS}] &lt;%logger{36}&gt; [%level]: %msg%n%throwable" />
+            <Policies>
+                <TimeBasedTriggeringPolicy modulate="true" />
+            </Policies>
+        </RollingFile>
+    </Appenders>
+    <Loggers>
+        <Root level="debug">
+            <AppenderRef ref="Console" />
+            <AppenderRef ref="RollingFile" />
+        </Root>
+    </Loggers>
+</Configuration>

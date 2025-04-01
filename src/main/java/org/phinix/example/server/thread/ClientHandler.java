@@ -3,6 +3,7 @@ package org.phinix.example.server.thread;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.phinix.example.server.service.ServiceManager;
+import org.phinix.example.server.service.task.ClientTaskExecutor;
 import org.phinix.lib.server.context.Context;
 import org.phinix.lib.server.service.services.CommandProcessor;
 import org.phinix.lib.server.core.worker.AbstractWorker;
@@ -15,6 +16,9 @@ public class ClientHandler extends AbstractWorker {
 
     public ClientHandler(Socket socket, Context serverContext) throws IOException {
         super(socket, serverContext, new ServiceManager());
+
+        ClientTaskExecutor executor = getServiceRegister().getService(ClientTaskExecutor.class);
+        executor.start(this);
     }
 
     @Override @SuppressWarnings("unchecked")
@@ -24,5 +28,9 @@ public class ClientHandler extends AbstractWorker {
         if (!commandProcessor.processCommand(message, this)) {
             getMessagesManager().sendMessage(socket.getInetAddress() + ": " + message);
         }
+    }
+
+    public void jijija() {
+        System.out.println("jijijija");
     }
 }

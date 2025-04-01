@@ -1,8 +1,9 @@
 package org.phinix.lib.server.core.task.tasks;
 
+import org.phinix.lib.server.core.Manageable;
 import org.phinix.lib.server.core.task.Task;
 
-public abstract class LoopTask extends Task {
+public abstract class LoopTask<M extends Manageable> extends Task<M> {
     protected final long millis;
 
     public LoopTask(long millis) {
@@ -10,14 +11,14 @@ public abstract class LoopTask extends Task {
     }
 
     @Override
-    protected void execute() {
+    public void executeAsync(M manageable) {
         running = true;
         while (running) {
             if (paused) {
                 pauseDelay();
                 continue;
             }
-            task();
+            process(manageable);
             delay(millis);
         }
     }

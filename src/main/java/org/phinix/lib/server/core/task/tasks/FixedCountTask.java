@@ -1,8 +1,9 @@
 package org.phinix.lib.server.core.task.tasks;
 
+import org.phinix.lib.server.core.Manageable;
 import org.phinix.lib.server.core.task.Task;
 
-public abstract class FixedCountTask extends Task {
+public abstract class FixedCountTask<M extends Manageable> extends Task<M> {
     private final long millis;
 
     protected final int maxExecutions;
@@ -14,14 +15,14 @@ public abstract class FixedCountTask extends Task {
     }
 
     @Override
-    protected void execute() {
+    public void executeAsync(M manageable) {
         running = true;
         while (running && currentExecutions < maxExecutions) {
             if (paused) {
                 pauseDelay();
                 continue;
             }
-            task();
+            process(manageable);
             delay(millis);
         }
         running = false;

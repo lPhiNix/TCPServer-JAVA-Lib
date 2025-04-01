@@ -4,7 +4,6 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import org.phinix.example.server.service.task.TaskExecutor;
 import org.phinix.lib.server.context.Context;
 import org.phinix.lib.server.service.AbstractServiceRegister;
 import org.phinix.lib.common.util.MessagesManager;
@@ -18,7 +17,6 @@ public abstract class AbstractWorker implements Worker {
     protected final Socket socket;
     protected final MessagesManager messagesManager;
     protected final AbstractServiceRegister serviceRegister;
-    protected final TaskExecutor asyncTasks;
     protected final Context serverContext;
     protected boolean isRunning;
 
@@ -30,8 +28,6 @@ public abstract class AbstractWorker implements Worker {
         this.serviceRegister = serviceRegister;
         this.serverContext = serverContext;
 
-        asyncTasks = new TaskExecutor();
-
         isRunning = true;
     }
 
@@ -39,8 +35,6 @@ public abstract class AbstractWorker implements Worker {
     public void run() {
         try {
             logger.log(Level.INFO, "Listening client {}", socket.getInetAddress());
-
-            asyncTasks.start();
 
             while (isRunning) {
                 if (!listenLoop()) {
@@ -88,7 +82,6 @@ public abstract class AbstractWorker implements Worker {
                 socket.close();
                 logger.log(Level.INFO, "Worker stopped.");
             }
-            asyncTasks.stop();
         } catch (IOException e) {
             logger.log(Level.ERROR, "Error closing worker: ", e);
         }

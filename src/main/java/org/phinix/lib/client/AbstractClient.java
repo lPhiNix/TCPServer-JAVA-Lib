@@ -62,7 +62,6 @@ public abstract class AbstractClient implements Client {
     }
 
     protected abstract void handleReceivedMessage();
-
     protected abstract void handleInputUser();
 
     @Override

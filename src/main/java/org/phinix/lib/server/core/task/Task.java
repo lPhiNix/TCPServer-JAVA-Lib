@@ -1,7 +1,8 @@
 package org.phinix.lib.server.core.task;
 
-public abstract class Task {
+import org.phinix.lib.server.core.Manageable;
 
+public abstract class Task<M extends Manageable> {
     protected static final long PAUSE_DELAY_MILLIS = 100;
 
     protected Thread threadTask;
@@ -13,8 +14,8 @@ public abstract class Task {
         this.paused = false;
     }
 
-    protected abstract void task();
-    protected abstract void execute();
+    public abstract void process(M manageable);
+    public abstract void executeAsync(M manageable);
 
     protected void delay(long millis) {
         try {
@@ -28,9 +29,9 @@ public abstract class Task {
         delay(PAUSE_DELAY_MILLIS);
     }
 
-    public void start() {
+    public void start(M manageable) {
         if (!running) {
-            threadTask = new Thread(this::execute);
+            threadTask = new Thread(() -> this.executeAsync(manageable));
             threadTask.start();
         }
     }

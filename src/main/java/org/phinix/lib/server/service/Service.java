@@ -1,3 +1,5 @@
 package org.phinix.lib.server.service;
 
-public interface Service {}
+import org.phinix.lib.server.core.Manageable;
+
+public interface Service extends Manageable {}

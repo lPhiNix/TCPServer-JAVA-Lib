@@ -14,8 +14,8 @@ public abstract class Task<M extends Manageable> {
         this.paused = false;
     }
 
-    public abstract void process(M serverContext);
-    protected abstract void executeAsync(M serverContext);
+    public abstract void process(M manageable);
+    protected abstract void executeAsync(M manageable);
 
     protected void delay(long millis) {
         try {

@@ -36,7 +36,7 @@ public class RegisterCommand implements Command<ClientHandler> {
             logger.log(Level.INFO, "Client: {} has registered user: {}", new Object[]{client.getSocket().getInetAddress().getHostAddress(), tempUser.toString()});
         } else {
             client.getMessagesManager().sendMessage("The input user already exist!");
-            logger.log(Level.WARN, "Client: {}'s try to register as {} has failed!", new Object[]{client.getSocket().getInetAddress().getHostAddress(), client.getCurrentUser().getUsername()});
+            logger.log(Level.WARN, "Client: {}'s try to register as {} has failed!", new Object[]{client.getSocket().getInetAddress().getHostAddress(), username});
         }
     }
 

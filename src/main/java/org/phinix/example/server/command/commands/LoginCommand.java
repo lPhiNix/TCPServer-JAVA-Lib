@@ -37,7 +37,7 @@ public class LoginCommand implements Command<ClientHandler> {
             logger.log(Level.INFO, "Client: {} has logged in as {}", new Object[]{client.getSocket().getInetAddress().getHostAddress(), client.getCurrentUser().getUsername()});
         } else {
             client.getMessagesManager().sendMessage("The input user does not exist!");
-            logger.log(Level.WARN, "Client: {}'s try to login as {} has failed!", new Object[]{client.getSocket().getInetAddress().getHostAddress(), client.getCurrentUser().getUsername()});
+            logger.log(Level.WARN, "Client: {}'s try to login as {} has failed!", new Object[]{client.getSocket().getInetAddress().getHostAddress(), username});
         }
     }
 

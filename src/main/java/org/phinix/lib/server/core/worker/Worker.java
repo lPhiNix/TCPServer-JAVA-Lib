@@ -13,4 +13,5 @@ public interface Worker extends Runnable, Manageable {
     MessagesManager getMessagesManager();
     AbstractServiceRegister getServiceRegister();
     Context getServerContext();
+    String getClientAddress();
 }

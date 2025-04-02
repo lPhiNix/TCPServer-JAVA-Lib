@@ -1,9 +1,9 @@
 package org.phinix.example.server.service.services;
 
-import org.phinix.lib.common.model.User;
+import org.phinix.example.common.model.Player;
 import org.phinix.lib.server.service.services.AbstractUserManager;
 
-public class UserManager extends AbstractUserManager<User> {
+public class PlayerManager extends AbstractUserManager<Player> {
 
     private static final String FILE_NAME = "users.txt";
 
@@ -17,7 +17,7 @@ public class UserManager extends AbstractUserManager<User> {
         registerFieldType(String.class, String::valueOf);
     }
 
-    public UserManager() {
-        super(User.class, FILE_NAME);
+    public PlayerManager() {
+        super(Player.class, FILE_NAME);
     }
 }

@@ -151,7 +151,7 @@ public abstract class AbstractUserManager<U extends User> implements Service {
                 field.setAccessible(true);
                 stringBuilder.append(field.get(user)).append(",");
             }
-            stringBuilder.setLength(stringBuilder.length() - 1);
+            stringBuilder.setLength(stringBuilder.length());
         } catch (IllegalAccessException e) {
             logger.log(Level.ERROR, "Error converting user to string: ", e);
         }

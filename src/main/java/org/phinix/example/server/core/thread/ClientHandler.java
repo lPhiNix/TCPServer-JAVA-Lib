@@ -2,6 +2,7 @@ package org.phinix.example.server.core.thread;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.phinix.example.common.model.Player;
 import org.phinix.example.server.core.thread.task.ClientTaskExecutor;
 import org.phinix.example.server.service.ServiceManager;
 import org.phinix.lib.server.context.Context;
@@ -15,6 +16,8 @@ import java.net.Socket;
 public class ClientHandler extends AbstractWorker {
     private static final Logger logger = LogManager.getLogger();
 
+    private Player user = null;
+
     public ClientHandler(Socket socket, Context serverContext) throws IOException {
         super(socket, serverContext, new ServiceManager(), new ClientTaskExecutor(new TaskQueue<>()));
     }
@@ -24,11 +27,26 @@ public class ClientHandler extends AbstractWorker {
         CommandProcessor<ClientHandler> commandProcessor = getServiceRegister().getService(CommandProcessor.class);
 
         if (!commandProcessor.processCommand(message, this)) {
-            getMessagesManager().sendMessage(socket.getInetAddress() + ": " + message);
+            getMessagesManager().sendMessage(getClientAddress() + ": " + message);
         }
     }
 
-    public void clientHandler() {
-        System.out.println("clientHandler");
+    @Override
+    public String getClientAddress() {
+        if (user != null) {
+            return user.getUsername();
+        }
+
+        return super.getClientAddress();
+    }
+
+
+
+    public Player getCurrentUser() {
+        return user;
+    }
+
+    public void setCurrentUser(Player user) {
+        this.user = user;
     }
 }

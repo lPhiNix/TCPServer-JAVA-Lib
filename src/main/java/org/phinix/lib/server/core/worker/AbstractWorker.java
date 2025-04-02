@@ -87,6 +87,15 @@ public abstract class AbstractWorker implements Worker {
     }
 
     @Override
+    public String getClientAddress() {
+        return socket.getInetAddress().getHostAddress();
+    }
+
+    public Socket getSocket() {
+        return socket;
+    }
+
+    @Override
     public void closeConnection() {
         isRunning = false;
         asyncClientTaskExecutor.stop();

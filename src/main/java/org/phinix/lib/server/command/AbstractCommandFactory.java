@@ -34,6 +34,7 @@ public abstract class AbstractCommandFactory<W extends Worker> {
     }
 
     public Command<W> createCommand(String commandName) throws Exception {
+        logger.log(Level.DEBUG, "Building {}...", commandName);
         Class<? extends Command<W>> commandClass = getCommandType(commandName);
         if (commandClass != null) {
             return commandClass.getConstructor().newInstance();

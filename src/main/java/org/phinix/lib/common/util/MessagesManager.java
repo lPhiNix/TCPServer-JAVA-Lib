@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.net.SocketException;
 
 public class MessagesManager {
     private static final Logger logger = LogManager.getLogger();
@@ -42,7 +43,12 @@ public class MessagesManager {
     }
 
     public String receiveMessage() throws IOException {
-        return input.readLine();
+        try {
+            return input.readLine();
+        } catch (SocketException e) {
+            logger.log(Level.ERROR, "Don't be able to receive client message: ", e);
+            return null;
+        }
     }
 
     public BufferedReader createSocketInput() throws IOException {

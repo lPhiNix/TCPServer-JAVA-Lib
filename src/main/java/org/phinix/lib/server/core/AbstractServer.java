@@ -6,6 +6,7 @@ import org.apache.logging.log4j.Logger;
 
 import org.phinix.lib.server.context.Context;
 import org.phinix.lib.server.context.ContextFactory;
+import org.phinix.lib.server.core.task.AbstractTaskExecutor;
 import org.phinix.lib.server.core.worker.Worker;
 import org.phinix.lib.server.core.worker.WorkerFactory;
 
@@ -22,6 +23,7 @@ public abstract class AbstractServer implements Server {
 
     protected final int port;
     protected final int maxUsers;
+    protected final AbstractTaskExecutor asyncGlobalTaskExecutor;
     protected ServerSocket serverSocket;
     protected boolean isRunning;
 
@@ -31,13 +33,14 @@ public abstract class AbstractServer implements Server {
     private final ContextFactory contextFactory;
     private final ExecutorService threadPool;
 
-    public AbstractServer(int port, int maxUsers, WorkerFactory workerFactory, ContextFactory contextFactory) {
+    public AbstractServer(int port, int maxUsers, WorkerFactory workerFactory, ContextFactory contextFactory, AbstractTaskExecutor taskExecutor) {
         logger.log(Level.DEBUG, "Initializing");
 
         this.port = port;
         this.maxUsers = maxUsers;
         this.workerFactory = workerFactory;
         this.contextFactory = contextFactory;
+        this.asyncGlobalTaskExecutor = taskExecutor;
 
         threadPool = Executors.newFixedThreadPool(maxUsers);
         connectedClients = new CopyOnWriteArrayList<>();
@@ -45,13 +48,14 @@ public abstract class AbstractServer implements Server {
         isRunning = false;
     }
 
-    public AbstractServer(int port, int maxUsers, WorkerFactory workerFactory, ContextFactory contextFactory, ServerSocket serverSocket) {
+    public AbstractServer(int port, int maxUsers, WorkerFactory workerFactory, ContextFactory contextFactory, AbstractTaskExecutor taskExecutor, ServerSocket serverSocket) {
         logger.log(Level.DEBUG, "Initializing with external socket");
 
         this.port = port;
         this.maxUsers = maxUsers;
         this.workerFactory = workerFactory;
         this.contextFactory = contextFactory;
+        this.asyncGlobalTaskExecutor = taskExecutor;
         this.serverSocket = serverSocket;
 
         threadPool = Executors.newFixedThreadPool(maxUsers);
@@ -67,6 +71,8 @@ public abstract class AbstractServer implements Server {
             logger.log(Level.INFO, "Initializing server on port: {}", port);
 
             isRunning = true;
+
+            asyncGlobalTaskExecutor.start(contextFactory.createServerContext(this));
 
             while (isRunning) {
                 if (Thread.activeCount() > maxUsers) {
@@ -99,6 +105,7 @@ public abstract class AbstractServer implements Server {
     @Override
     public void stop() {
         isRunning = false;
+        asyncGlobalTaskExecutor.stop();
         try {
             if (serverSocket != null && !serverSocket.isClosed()) {
                 serverSocket.close();

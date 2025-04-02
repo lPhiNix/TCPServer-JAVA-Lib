@@ -23,7 +23,7 @@ public class CommandProcessor<W extends Worker> implements Service {
     }
 
     public boolean processCommand(String line, W worker) {
-        logger.log(Level.INFO, "Processing command line: {}", line);
+        logger.log(Level.DEBUG, "Processing command line: {}", line);
 
         try {
             String[] formatLine = formatLine(line);

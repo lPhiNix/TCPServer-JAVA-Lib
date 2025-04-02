@@ -1,6 +1,6 @@
 package org.phinix.example.server.command.commands;
 
-import org.phinix.example.server.thread.ClientHandler;
+import org.phinix.example.server.core.thread.ClientHandler;
 import org.phinix.lib.server.command.Command;
 
 public class HelpCommand implements Command<ClientHandler> {

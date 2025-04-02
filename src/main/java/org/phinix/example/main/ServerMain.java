@@ -1,6 +1,6 @@
 package org.phinix.example.main;
 
-import org.phinix.example.server.TCPServer;
+import org.phinix.example.server.core.TCPServer;
 
 public class ServerMain {
     public static void main(String[] args) {

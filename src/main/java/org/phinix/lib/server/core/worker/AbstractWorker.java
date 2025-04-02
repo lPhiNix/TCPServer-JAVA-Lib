@@ -5,6 +5,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import org.phinix.lib.server.context.Context;
+import org.phinix.lib.server.core.task.AbstractTaskExecutor;
 import org.phinix.lib.server.service.AbstractServiceRegister;
 import org.phinix.lib.common.util.MessagesManager;
 
@@ -18,15 +19,20 @@ public abstract class AbstractWorker implements Worker {
     protected final MessagesManager messagesManager;
     protected final AbstractServiceRegister serviceRegister;
     protected final Context serverContext;
+    protected AbstractTaskExecutor asyncClientTaskExecutor;
     protected boolean isRunning;
 
-    public AbstractWorker(Socket socket, Context serverContext, AbstractServiceRegister serviceRegister) throws IOException {
+    public AbstractWorker(Socket socket,
+                          Context serverContext,
+                          AbstractServiceRegister serviceRegister,
+                          AbstractTaskExecutor taskExecutor) throws IOException {
         logger.log(Level.DEBUG, "Initializing");
 
         this.socket = socket;
         this.messagesManager = new MessagesManager(socket);
         this.serviceRegister = serviceRegister;
         this.serverContext = serverContext;
+        this.asyncClientTaskExecutor = taskExecutor;
 
         isRunning = true;
     }
@@ -36,6 +42,7 @@ public abstract class AbstractWorker implements Worker {
         try {
             logger.log(Level.INFO, "Listening client {}", socket.getInetAddress());
 
+            asyncClientTaskExecutor.start(serverContext);
             while (isRunning) {
                 if (!listenLoop()) {
                     break;
@@ -77,10 +84,12 @@ public abstract class AbstractWorker implements Worker {
     @Override
     public void closeConnection() {
         isRunning = false;
+        asyncClientTaskExecutor.stop();
         try {
             if (socket != null && !socket.isClosed()) {
                 socket.close();
                 logger.log(Level.INFO, "Worker stopped.");
+                System.out.println("----------- " + socket);
             }
         } catch (IOException e) {
             logger.log(Level.ERROR, "Error closing worker: ", e);

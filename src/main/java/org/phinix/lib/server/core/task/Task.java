@@ -1,8 +1,8 @@
 package org.phinix.lib.server.core.task;
 
-import org.phinix.lib.server.core.Manageable;
+import org.phinix.lib.server.context.Context;
 
-public abstract class Task<M extends Manageable> {
+public abstract class Task<C extends Context> {
     protected static final long PAUSE_DELAY_MILLIS = 100;
 
     protected Thread threadTask;
@@ -14,8 +14,8 @@ public abstract class Task<M extends Manageable> {
         this.paused = false;
     }
 
-    public abstract void process(M manageable);
-    public abstract void executeAsync(M manageable);
+    public abstract void process(C serverContext);
+    protected abstract void executeAsync(C serverContext);
 
     protected void delay(long millis) {
         try {
@@ -29,9 +29,9 @@ public abstract class Task<M extends Manageable> {
         delay(PAUSE_DELAY_MILLIS);
     }
 
-    public void start(M manageable) {
+    public void start(C serverContext) {
         if (!running) {
-            threadTask = new Thread(() -> this.executeAsync(manageable));
+            threadTask = new Thread(() -> this.executeAsync(serverContext));
             threadTask.start();
         }
     }
@@ -53,5 +53,9 @@ public abstract class Task<M extends Manageable> {
 
     public boolean isRunning() {
         return running;
+    }
+
+    public String getName() {
+        return threadTask.getName();
     }
 }

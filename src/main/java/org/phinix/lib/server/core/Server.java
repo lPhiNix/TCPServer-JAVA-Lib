@@ -1,6 +1,6 @@
 package org.phinix.lib.server.core;
 
-public interface Server extends Manageable {
+public interface Server {
     void start();
     void stop();
 }

@@ -82,6 +82,11 @@ public abstract class AbstractWorker implements Worker {
     }
 
     @Override
+    public Context getServerContext() {
+        return serverContext;
+    }
+
+    @Override
     public void closeConnection() {
         isRunning = false;
         asyncClientTaskExecutor.stop();

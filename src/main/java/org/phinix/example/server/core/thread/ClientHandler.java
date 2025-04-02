@@ -2,7 +2,6 @@ package org.phinix.example.server.core.thread;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.phinix.example.server.core.TCPServer;
 import org.phinix.example.server.core.thread.task.ClientTaskExecutor;
 import org.phinix.example.server.service.ServiceManager;
 import org.phinix.lib.server.context.Context;
@@ -29,7 +28,7 @@ public class ClientHandler extends AbstractWorker {
         }
     }
 
-    public Socket getSocket() {
-        return socket;
+    public void clientHandler() {
+        System.out.println("clientHandler");
     }
 }

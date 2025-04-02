@@ -1,11 +1,12 @@
 package org.phinix.lib.server.context;
 
 import org.phinix.lib.server.core.AbstractServer;
+import org.phinix.lib.server.core.Manageable;
 import org.phinix.lib.server.core.worker.Worker;
 
 import java.util.List;
 
-public class Context {
+public class Context implements Manageable {
     protected final AbstractServer server;
 
     public Context(AbstractServer server) {

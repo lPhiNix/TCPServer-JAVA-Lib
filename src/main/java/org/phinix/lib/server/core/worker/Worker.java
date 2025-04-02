@@ -1,5 +1,6 @@
 package org.phinix.lib.server.core.worker;
 
+import org.phinix.lib.server.context.Context;
 import org.phinix.lib.server.core.Manageable;
 import org.phinix.lib.server.service.AbstractServiceRegister;
 import org.phinix.lib.common.util.MessagesManager;
@@ -11,4 +12,5 @@ public interface Worker extends Runnable, Manageable {
     void closeConnection();
     MessagesManager getMessagesManager();
     AbstractServiceRegister getServiceRegister();
+    Context getServerContext();
 }

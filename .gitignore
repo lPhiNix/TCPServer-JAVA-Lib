@@ -9,6 +9,7 @@ logs/
 *.iws
 *.iml
 *.ipr
+TEST.java
 
 
 ### Eclipse ###

@@ -58,9 +58,8 @@ public abstract class AbstractUserManager<U extends User> implements Service {
     }
 
     public boolean registerUser(U user) {
-        logger.log(Level.DEBUG, "Registering user: " + user.getUsername());
+        logger.log(Level.DEBUG, "Registering user: {}", user.getUsername());
         if (users.containsKey(user.getUsername())) {
-            logger.log(Level.DEBUG, "User " + user.getUsername() + " already exists.");
             return false;
         }
         users.put(user.getUsername(), user);
@@ -69,18 +68,16 @@ public abstract class AbstractUserManager<U extends User> implements Service {
     }
 
     public U authenticate(String username, String password) {
-        logger.log(Level.DEBUG, "Authenticating user: " + username);
+        logger.log(Level.DEBUG, "Authenticating user: {}", username);
         U user = users.get(username);
         if (user != null && user.getPassword().equals(password)) {
-            logger.log(Level.DEBUG, "User " + username + " authenticated successfully.");
             return user;
         }
-        logger.log(Level.DEBUG, "Authentication failed for user: " + username);
         return null;
     }
 
     public void updateUser(U newUser) {
-        logger.log(Level.DEBUG, "Updating user: " + newUser.getUsername());
+        logger.log(Level.DEBUG, "Updating user: {}", newUser.getUsername());
         users.put(newUser.getUsername(), newUser);
         saveUsersToFile();
     }
@@ -90,13 +87,14 @@ public abstract class AbstractUserManager<U extends User> implements Service {
     }
 
     private void loadUsersFromFile() {
-        logger.log(Level.DEBUG, "Loading users from file: " + filePath);
+        logger.log(Level.DEBUG, "Loading users from file: {}", filePath);
+
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 U user = stringToUser(line);
                 if (user != null) {
-                    logger.log(Level.DEBUG, "Loaded user: " + user.getUsername());
+                    logger.log(Level.DEBUG, "Loaded user: {}", user.getUsername());
                     users.put(user.getUsername(), user);
                 }
             }
@@ -108,7 +106,7 @@ public abstract class AbstractUserManager<U extends User> implements Service {
 
     private boolean findOutUserFile() {
         File userFile = new File(filePath);
-        logger.log(Level.DEBUG, "Checking if user file exists: " + filePath);
+        logger.log(Level.DEBUG, "Checking if user file exists: {}", filePath);
 
         if (!userFile.exists()) {
             createUserFile(userFile);
@@ -119,7 +117,7 @@ public abstract class AbstractUserManager<U extends User> implements Service {
     }
 
     private void createUserFile(File userFile) {
-        logger.log(Level.DEBUG, "Creating user file: " + filePath);
+        logger.log(Level.DEBUG, "Creating user file: {}", filePath);
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(userFile))) {
             writer.write("");
         } catch (IOException e) {
@@ -128,7 +126,7 @@ public abstract class AbstractUserManager<U extends User> implements Service {
     }
 
     private void saveUsersToFile() {
-        logger.log(Level.DEBUG, "Saving users to file: " + filePath);
+        logger.log(Level.DEBUG, "Saving users to file: {}", filePath);
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
             for (U user : users.values()) {
                 writer.write(userToString(user));
@@ -143,33 +141,27 @@ public abstract class AbstractUserManager<U extends User> implements Service {
     private U stringToUser(String line) {
         if (line.isEmpty()) return null;
 
-        logger.log(Level.DEBUG, "Converting string to user: " + line);
+        logger.log(Level.DEBUG, "Converting string to user: {}", line);
         try {
             String[] parts = line.split(",");
 
-            // Asegúrate de que tienes el número correcto de partes
             if (parts.length != 2) {
-                logger.log(Level.WARN, "Incorrect number of fields in line: " + line);
+                logger.log(Level.WARN, "Incorrect number of fields in line: {}", line);
                 return null;
             }
 
-            // Crear una nueva instancia del usuario (Player)
             U user = userType.getDeclaredConstructor().newInstance();
             Field[] fields = getAllFields(userType);
 
-            // Asignar los valores a los campos usando reflexión
             for (int i = 0; i < fields.length; i++) {
                 fields[i].setAccessible(true);
-                logger.log(Level.DEBUG, "Setting field " + fields[i].getName() + " with value: " + parts[i]);
+                logger.log(Level.DEBUG, "Setting field {} with value: {}", new Object[]{fields[i].getName(), parts[i]});
 
-                // Asegurarse de que no haya un IndexOutOfBoundsException
-                if (i < parts.length) {
-                    Object value = cast(fields[i].getType(), parts[i]);
-                    if (value != null) {
-                        fields[i].set(user, value);
-                    } else {
-                        logger.log(Level.WARN, "Failed to cast value for field " + fields[i].getName());
-                    }
+                Object value = cast(fields[i].getType(), parts[i]);
+                if (value != null) {
+                    fields[i].set(user, value);
+                } else {
+                    logger.log(Level.WARN, "Failed to cast value for field {}", fields[i].getName());
                 }
             }
             return user;
@@ -188,26 +180,25 @@ public abstract class AbstractUserManager<U extends User> implements Service {
             System.out.println(field.getName());
         }
 
-        logger.log(Level.DEBUG, "Converting user to string. User class: " + user.getClass().getName());
+        logger.log(Level.DEBUG, "Converting user to string. User class: {}", user.getClass().getName());
 
         try {
             for (Field field : fields) {
                 field.setAccessible(true);
                 Object value = field.get(user);
-                logger.log(Level.DEBUG, "Field: " + field.getName() + " - Value: " + value);
+                logger.log(Level.DEBUG , "Field:  {} - Value: {}", new Object[]{field.getName(), value});
 
                 stringBuilder.append(value).append(",");
             }
 
-            logger.log(Level.DEBUG, "Intermediate string (before trimming last comma): " + stringBuilder.toString());
+            logger.log(Level.DEBUG, "Intermediate string (before trimming last comma): {}", stringBuilder);
 
             if (!stringBuilder.isEmpty()) {
                 stringBuilder.setLength(stringBuilder.length() - 1);
             }
-            logger.log(Level.DEBUG, "Final string representation of the user: " + stringBuilder.toString());
+            logger.log(Level.DEBUG, "Final string representation of the user: {}", stringBuilder);
 
         } catch (IllegalAccessException e) {
-            // Si ocurre un error en la reflexión, se loggea con un nivel de ERROR
             logger.log(Level.ERROR, "Error converting user to string: ", e);
         }
 

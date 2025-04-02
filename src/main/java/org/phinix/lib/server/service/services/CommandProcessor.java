@@ -59,7 +59,7 @@ public class CommandProcessor<W extends Worker> implements Service {
     private boolean buildAndExecuteCommand(String commandName, String[] commandParameters, W worker) throws Exception {
         Command<W> userCommand = commandFactory.createCommand(commandName);
         if (userCommand != null) {
-            logger.log(Level.DEBUG, "Command build successfully!: {}", userCommand.getClass().getSimpleName());
+            logger.log(Level.INFO, "Command execute successfully!: {}", userCommand.getClass().getSimpleName());
             userCommand.execute(commandParameters, worker);
             return true;
         }

@@ -1,13 +1,13 @@
 package org.phinix.example.server.core.thread.task;
 
-import org.phinix.example.server.core.TCPServerContext;
+import org.phinix.example.server.core.thread.ClientHandler;
 import org.phinix.example.server.core.thread.task.tasks.ExampleClientTask;
 import org.phinix.lib.server.core.task.AbstractTaskExecutor;
 import org.phinix.lib.server.core.task.TaskQueue;
 
-public class ClientTaskExecutor extends AbstractTaskExecutor<TCPServerContext> {
+public class ClientTaskExecutor extends AbstractTaskExecutor<ClientHandler> {
 
-    public ClientTaskExecutor(TaskQueue<TCPServerContext> taskQueue) {
+    public ClientTaskExecutor(TaskQueue<ClientHandler> taskQueue) {
         super(taskQueue);
     }
 

@@ -1,8 +1,8 @@
 package org.phinix.lib.server.core.task;
 
-import org.phinix.lib.server.context.Context;
+import org.phinix.lib.server.core.Manageable;
 
-public abstract class Task<C extends Context> {
+public abstract class Task<M extends Manageable> {
     protected static final long PAUSE_DELAY_MILLIS = 100;
 
     protected Thread threadTask;
@@ -14,8 +14,8 @@ public abstract class Task<C extends Context> {
         this.paused = false;
     }
 
-    public abstract void process(C serverContext);
-    protected abstract void executeAsync(C serverContext);
+    public abstract void process(M serverContext);
+    protected abstract void executeAsync(M serverContext);
 
     protected void delay(long millis) {
         try {
@@ -29,7 +29,7 @@ public abstract class Task<C extends Context> {
         delay(PAUSE_DELAY_MILLIS);
     }
 
-    public void start(C serverContext) {
+    public void start(M serverContext) {
         if (!running) {
             threadTask = new Thread(() -> this.executeAsync(serverContext));
             threadTask.start();

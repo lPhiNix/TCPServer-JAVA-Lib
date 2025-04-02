@@ -15,7 +15,6 @@ public class MessagesManager {
     private static final Logger logger = LogManager.getLogger();
 
     private final Socket socket;
-
     private final BufferedReader input;
     private final PrintWriter output;
 

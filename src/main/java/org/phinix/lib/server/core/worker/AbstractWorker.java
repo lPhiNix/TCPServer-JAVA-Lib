@@ -12,6 +12,7 @@ import org.phinix.lib.common.util.MessagesManager;
 import java.io.IOException;
 import java.net.Socket;
 
+@SuppressWarnings("unchecked")
 public abstract class AbstractWorker implements Worker {
     private static final Logger logger = LogManager.getLogger();
 
@@ -42,7 +43,7 @@ public abstract class AbstractWorker implements Worker {
         try {
             logger.log(Level.INFO, "Listening client {}", socket.getInetAddress());
 
-            asyncClientTaskExecutor.start(serverContext);
+            asyncClientTaskExecutor.start(this);
             while (isRunning) {
                 if (!listenLoop()) {
                     break;
@@ -94,7 +95,6 @@ public abstract class AbstractWorker implements Worker {
             if (socket != null && !socket.isClosed()) {
                 socket.close();
                 logger.log(Level.INFO, "Worker stopped.");
-                System.out.println("----------- " + socket);
             }
         } catch (IOException e) {
             logger.log(Level.ERROR, "Error closing worker: ", e);

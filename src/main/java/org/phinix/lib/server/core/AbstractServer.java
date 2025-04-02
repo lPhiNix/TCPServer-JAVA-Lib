@@ -64,7 +64,7 @@ public abstract class AbstractServer implements Server {
         isRunning = false;
     }
 
-    @Override
+    @Override @SuppressWarnings("unchecked")
     public void start() {
         try {
             serverSocket = new ServerSocket(port);
@@ -72,7 +72,7 @@ public abstract class AbstractServer implements Server {
 
             isRunning = true;
 
-            asyncGlobalTaskExecutor.start(contextFactory.createServerContext(this));
+            asyncGlobalTaskExecutor.start(this);
 
             while (isRunning) {
                 if (Thread.activeCount() > maxUsers) {
@@ -139,6 +139,10 @@ public abstract class AbstractServer implements Server {
         }
 
         return List.copyOf(connectedClients);
+    }
+
+    public AbstractTaskExecutor getAsyncGlobalTaskExecutor() {
+        return asyncGlobalTaskExecutor;
     }
 
     public final int getPort() {

@@ -1,22 +1,22 @@
 package org.phinix.lib.server.core.task;
 
-import org.phinix.lib.server.context.Context;
+import org.phinix.lib.server.core.Manageable;
 
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-public class TaskQueue<C extends Context> {
-    private final Queue<Task<C>> taskQueue;
+public class TaskQueue<M extends Manageable> {
+    private final Queue<Task<M>> taskQueue;
 
     public TaskQueue() {
         taskQueue = new ConcurrentLinkedQueue<>();
     }
 
-    public void addTask(Task<C> task) {
+    public void addTask(Task<M> task) {
         taskQueue.offer(task);
     }
 
-    public Task<C> getNextTask() {
+    public Task<M> getNextTask() {
         return taskQueue.poll();
     }
 
@@ -24,7 +24,7 @@ public class TaskQueue<C extends Context> {
         return !taskQueue.isEmpty();
     }
 
-    public Queue<Task<C>> getTaskQueue() {
+    public Queue<Task<M>> getTaskQueue() {
         return new ConcurrentLinkedQueue<>(taskQueue);
     }
 }

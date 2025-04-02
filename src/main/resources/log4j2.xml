@@ -5,7 +5,7 @@
     </Properties>
     <Appenders>
         <Console name="Console" target="SYSTEM_OUT">
-            <PatternLayout pattern="%highlight{[%d{HH:mm:ss.SSS}] &lt;%logger{36}&gt; [%level]: %msg%n%throwable}{
+            <PatternLayout pattern="%highlight{[%d{HH:mm:ss.SSS}] [%thread] &lt;%logger{36}&gt; [%level]: %msg%n%throwable}{
                 FATAL=red blink,
                 ERROR=red,
                 WARN=yellow,

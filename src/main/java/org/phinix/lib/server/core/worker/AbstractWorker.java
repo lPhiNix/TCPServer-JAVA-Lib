@@ -12,7 +12,6 @@ import org.phinix.lib.common.util.MessagesManager;
 import java.io.IOException;
 import java.net.Socket;
 
-@SuppressWarnings("unchecked")
 public abstract class AbstractWorker implements Worker {
     private static final Logger logger = LogManager.getLogger();
 
@@ -38,7 +37,7 @@ public abstract class AbstractWorker implements Worker {
         isRunning = true;
     }
 
-    @Override
+    @Override @SuppressWarnings("unchecked")
     public void run() {
         try {
             logger.log(Level.INFO, "Listening client {}", socket.getInetAddress());

@@ -3,11 +3,10 @@ package org.phinix.lib.server.service.services;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
 import org.phinix.lib.common.model.User;
+import org.phinix.lib.common.util.FileUtil;
 import org.phinix.lib.server.service.Service;
 
-import java.io.*;
 import java.lang.reflect.Field;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -21,12 +20,12 @@ public abstract class AbstractUserManager<U extends User> implements Service {
     protected abstract void initCastFieldType();
 
     protected void registerFieldType(Class<?> fieldType, Function<String, Object> cast) {
-        logger.log(Level.DEBUG, "Registering field type: " + fieldType.getName());
+        logger.log(Level.DEBUG, "Registering field type: {}", fieldType.getName());
         castMap.put(fieldType, cast);
     }
 
-    public Object cast(Class<?> fieldType, String value) {
-        logger.log(Level.DEBUG, "Casting value '" + value + "' to type " + fieldType.getName());
+    private Object cast(Class<?> fieldType, String value) {
+        logger.log(Level.DEBUG, "Casting value '{}' to type {}", value, fieldType.getName());
         Function<String, Object> caster = castMap.get(fieldType);
         if (caster != null) {
             return caster.apply(value);
@@ -36,22 +35,23 @@ public abstract class AbstractUserManager<U extends User> implements Service {
         }
     }
 
+
     private final String filePath;
     private final ConcurrentHashMap<String, U> users;
     private final Class<U> userType;
 
     public AbstractUserManager(Class<U> userType, String filePath) {
-        logger.log(Level.DEBUG, "Initializing AbstractUserManager with userType: " + userType.getName() + " and filePath: " + filePath);
+        logger.log(Level.DEBUG, "Initializing AbstractUserManager with userType: {} and filePath: {}", userType.getName(), filePath);
 
-        castMap = new HashMap<>();
+        this.castMap = new ConcurrentHashMap<>();
         initCastFieldType();
 
         this.filePath = filePath;
         this.users = new ConcurrentHashMap<>();
         this.userType = userType;
 
-        if (!findOutUserFile()) {
-            logger.log(Level.INFO, "{} created successfully!", filePath);
+        if (!FileUtil.fileExists(filePath)) {
+            FileUtil.createFile(filePath);
         }
 
         loadUsersFromFile();
@@ -59,7 +59,7 @@ public abstract class AbstractUserManager<U extends User> implements Service {
 
     public boolean registerUser(U user) {
         logger.log(Level.DEBUG, "Registering user: {}", user.getUsername());
-        if (users.containsKey(user.getUsername())) {
+        if (isUserAlreadyRegistered(user)) {
             return false;
         }
         users.put(user.getUsername(), user);
@@ -67,13 +67,18 @@ public abstract class AbstractUserManager<U extends User> implements Service {
         return true;
     }
 
+    private boolean isUserAlreadyRegistered(U user) {
+        return users.containsKey(user.getUsername());
+    }
+
     public U authenticate(String username, String password) {
         logger.log(Level.DEBUG, "Authenticating user: {}", username);
         U user = users.get(username);
-        if (user != null && user.getPassword().equals(password)) {
-            return user;
-        }
-        return null;
+        return isAuthenticated(user, password) ? user : null;
+    }
+
+    private boolean isAuthenticated(U user, String password) {
+        return user != null && user.getPassword().equals(password);
     }
 
     public void updateUser(U newUser) {
@@ -88,54 +93,20 @@ public abstract class AbstractUserManager<U extends User> implements Service {
 
     private void loadUsersFromFile() {
         logger.log(Level.DEBUG, "Loading users from file: {}", filePath);
-
-        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                U user = stringToUser(line);
-                if (user != null) {
-                    logger.log(Level.DEBUG, "Loaded user: {}", user.getUsername());
-                    users.put(user.getUsername(), user);
-                }
-            }
-            logger.log(Level.INFO, "Users loaded successfully from file!");
-        } catch (IOException e) {
-            logger.log(Level.ERROR, "Error loading users from file: ", e);
-        }
+        FileUtil.readFile(filePath, this::processFileLine);
     }
 
-    private boolean findOutUserFile() {
-        File userFile = new File(filePath);
-        logger.log(Level.DEBUG, "Checking if user file exists: {}", filePath);
-
-        if (!userFile.exists()) {
-            createUserFile(userFile);
-            return true;
-        }
-
-        return false;
-    }
-
-    private void createUserFile(File userFile) {
-        logger.log(Level.DEBUG, "Creating user file: {}", filePath);
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(userFile))) {
-            writer.write("");
-        } catch (IOException e) {
-            logger.log(Level.FATAL, "Error creating user file: ", e);
+    private void processFileLine(String line) {
+        U user = stringToUser(line);
+        if (user != null) {
+            logger.log(Level.DEBUG, "Loaded user: {}", user.getUsername());
+            users.put(user.getUsername(), user);
         }
     }
 
     private void saveUsersToFile() {
         logger.log(Level.DEBUG, "Saving users to file: {}", filePath);
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
-            for (U user : users.values()) {
-                writer.write(userToString(user));
-                writer.newLine();
-            }
-            logger.log(Level.INFO, "Users file saved successfully!");
-        } catch (IOException e) {
-            logger.log(Level.ERROR, "Error saving users file: ", e);
-        }
+        FileUtil.writeFile(filePath, users.values(), this::userToString);
     }
 
     private U stringToUser(String line) {
@@ -144,60 +115,48 @@ public abstract class AbstractUserManager<U extends User> implements Service {
         logger.log(Level.DEBUG, "Converting string to user: {}", line);
         try {
             String[] parts = line.split(",");
-
             if (parts.length != 2) {
                 logger.log(Level.WARN, "Incorrect number of fields in line: {}", line);
                 return null;
             }
 
-            U user = userType.getDeclaredConstructor().newInstance();
-            Field[] fields = getAllFields(userType);
-
-            for (int i = 0; i < fields.length; i++) {
-                fields[i].setAccessible(true);
-                logger.log(Level.DEBUG, "Setting field {} with value: {}", new Object[]{fields[i].getName(), parts[i]});
-
-                Object value = cast(fields[i].getType(), parts[i]);
-                if (value != null) {
-                    fields[i].set(user, value);
-                } else {
-                    logger.log(Level.WARN, "Failed to cast value for field {}", fields[i].getName());
-                }
-            }
-            return user;
+            return convertStringToUser(parts);
         } catch (Exception e) {
             logger.log(Level.ERROR, "Error converting string to user: ", e);
         }
         return null;
     }
 
+    private U convertStringToUser(String[] parts) throws Exception {
+        U user = userType.getDeclaredConstructor().newInstance();
+        Field[] fields = getAllFields(userType);
+
+        for (int i = 0; i < fields.length; i++) {
+            fields[i].setAccessible(true);
+            logger.log(Level.DEBUG, "Setting field {} with value: {}", fields[i].getName(), parts[i]);
+
+            Object value = cast(fields[i].getType(), parts[i]);
+            setFieldValue(user, fields[i], value);
+        }
+        return user;
+    }
+
+    private void setFieldValue(U user, Field field, Object value) throws IllegalAccessException {
+        if (value != null) {
+            field.set(user, value);
+        } else {
+            logger.log(Level.WARN, "Failed to cast value for field {}", field.getName());
+        }
+    }
 
     private String userToString(U user) {
         StringBuilder stringBuilder = new StringBuilder();
         Field[] fields = getAllFields(userType);
 
-        for (Field field : fields) {
-            System.out.println(field.getName());
-        }
-
         logger.log(Level.DEBUG, "Converting user to string. User class: {}", user.getClass().getName());
 
         try {
-            for (Field field : fields) {
-                field.setAccessible(true);
-                Object value = field.get(user);
-                logger.log(Level.DEBUG , "Field:  {} - Value: {}", new Object[]{field.getName(), value});
-
-                stringBuilder.append(value).append(",");
-            }
-
-            logger.log(Level.DEBUG, "Intermediate string (before trimming last comma): {}", stringBuilder);
-
-            if (!stringBuilder.isEmpty()) {
-                stringBuilder.setLength(stringBuilder.length() - 1);
-            }
-            logger.log(Level.DEBUG, "Final string representation of the user: {}", stringBuilder);
-
+            appendFieldsToStringBuilder(user, fields, stringBuilder);
         } catch (IllegalAccessException e) {
             logger.log(Level.ERROR, "Error converting user to string: ", e);
         }
@@ -205,16 +164,27 @@ public abstract class AbstractUserManager<U extends User> implements Service {
         return stringBuilder.toString();
     }
 
+    private void appendFieldsToStringBuilder(U user, Field[] fields, StringBuilder stringBuilder) throws IllegalAccessException {
+        for (Field field : fields) {
+            field.setAccessible(true);
+            Object value = field.get(user);
+            logger.log(Level.DEBUG, "Field: {} - Value: {}", field.getName(), value);
+            stringBuilder.append(value).append(",");
+        }
+
+        if (!stringBuilder.isEmpty()) {
+            stringBuilder.setLength(stringBuilder.length() - 1);
+        }
+        logger.log(Level.DEBUG, "Final string representation of the user: {}", stringBuilder);
+    }
+
     private Field[] getAllFields(Class<?> clazz) {
         List<Field> allFields = new ArrayList<>();
-
         while (clazz != null) {
             Field[] declaredFields = clazz.getDeclaredFields();
             allFields.addAll(Arrays.asList(declaredFields));
-
             clazz = clazz.getSuperclass();
         }
-
         return allFields.toArray(new Field[0]);
     }
 }

@@ -4,7 +4,7 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.phinix.example.common.model.Player;
-import org.phinix.example.common.util.StringFormat;
+import org.phinix.lib.common.util.StringFormat;
 import org.phinix.example.server.command.CommandFactory;
 import org.phinix.example.server.core.thread.ClientHandler;
 import org.phinix.example.server.service.services.PlayerManager;

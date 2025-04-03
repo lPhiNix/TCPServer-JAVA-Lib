@@ -1,4 +1,4 @@
-package org.phinix.example.common.util;
+package org.phinix.lib.common.util;
 
 public class StringFormat {
     public static String hidePassword(String password) {

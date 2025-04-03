@@ -40,8 +40,6 @@ public class ClientHandler extends AbstractWorker {
         return super.getClientAddress();
     }
 
-
-
     public Player getCurrentUser() {
         return user;
     }

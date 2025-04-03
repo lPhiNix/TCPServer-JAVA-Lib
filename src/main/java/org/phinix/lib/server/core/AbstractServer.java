@@ -33,7 +33,7 @@ public abstract class AbstractServer implements Server {
     private final ContextFactory contextFactory;
     private final ExecutorService threadPool;
 
-    public AbstractServer(int port, int maxUsers, WorkerFactory workerFactory, ContextFactory contextFactory, AbstractTaskExecutor taskExecutor) {
+    public AbstractServer(int port, int maxUsers, ContextFactory contextFactory, WorkerFactory workerFactory, AbstractTaskExecutor taskExecutor) {
         logger.log(Level.DEBUG, "Initializing");
 
         this.port = port;
@@ -48,7 +48,7 @@ public abstract class AbstractServer implements Server {
         isRunning = false;
     }
 
-    public AbstractServer(int port, int maxUsers, WorkerFactory workerFactory, ContextFactory contextFactory, AbstractTaskExecutor taskExecutor, ServerSocket serverSocket) {
+    public AbstractServer(int port, int maxUsers, ContextFactory contextFactory, WorkerFactory workerFactory, AbstractTaskExecutor taskExecutor, ServerSocket serverSocket) {
         logger.log(Level.DEBUG, "Initializing with external socket");
 
         this.port = port;

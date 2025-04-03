@@ -10,10 +10,11 @@ public class TCPServer extends AbstractServer {
         super(
                 port,
                 maxUsers,
-                ClientHandler::new,
-                server ->
-                        new TCPServerContext((TCPServer) server),
-                new GlobalTaskExecutor(new TaskQueue<>()));
+                server -> new TCPServerContext((TCPServer) server),
+                (socket, serverContext) ->
+                        new ClientHandler(socket, (TCPServerContext) serverContext),
+                new GlobalTaskExecutor(new TaskQueue<>())
+        );
     }
 
     public void nose() {

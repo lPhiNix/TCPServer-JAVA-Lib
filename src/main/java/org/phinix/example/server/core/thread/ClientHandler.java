@@ -3,7 +3,7 @@ package org.phinix.example.server.core.thread;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.phinix.example.common.model.Player;
-import org.phinix.example.server.core.TCPServerContext;
+import org.phinix.example.server.core.MathGameServerContext;
 import org.phinix.example.server.core.thread.task.ClientTaskExecutor;
 import org.phinix.example.server.service.ServiceManager;
 import org.phinix.lib.server.core.task.TaskQueue;
@@ -16,10 +16,10 @@ import java.net.Socket;
 public class ClientHandler extends AbstractWorker {
     private static final Logger logger = LogManager.getLogger();
 
-    private final TCPServerContext serverContext;
+    private final MathGameServerContext serverContext;
     private Player user = null;
 
-    public ClientHandler(Socket socket, TCPServerContext serverContext) throws IOException {
+    public ClientHandler(Socket socket, MathGameServerContext serverContext) throws IOException {
         super(socket, serverContext, new ServiceManager(), new ClientTaskExecutor(new TaskQueue<>()));
 
         this.serverContext = serverContext;

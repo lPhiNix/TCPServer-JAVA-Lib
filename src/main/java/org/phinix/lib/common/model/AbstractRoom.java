@@ -15,7 +15,6 @@ public abstract class AbstractRoom implements Room {
     protected List<Worker> clients;
     protected Session session;
 
-
     public AbstractRoom(String roomName, Worker owner) {
         this.roomName = roomName;
         this.clients = new CopyOnWriteArrayList<>();

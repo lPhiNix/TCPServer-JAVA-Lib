@@ -8,7 +8,7 @@ import org.phinix.lib.client.AbstractClient;
 import java.io.IOException;
 import java.util.Scanner;
 
-public class MathGameClient extends AbstractClient {
+public class TCPClient extends AbstractClient {
     private static final Logger logger = LogManager.getLogger();
 
     private static final String RESET = "\u001B[0m";

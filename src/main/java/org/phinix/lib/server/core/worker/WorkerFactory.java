@@ -6,6 +6,19 @@ import org.phinix.lib.server.service.AbstractServiceRegister;
 import java.io.IOException;
 import java.net.Socket;
 
+/**
+ * Factory interface for creating {@link Worker} instances.
+ */
 public interface WorkerFactory {
+
+    /**
+     * Creates a new {@link Worker} instance.
+     *
+     * @param socket the client socket
+     * @param serverContext the server context
+     * @param serviceRegister the service register
+     * @return the created Worker
+     * @throws IOException if an I/O error occurs
+     */
     Worker createWorker(Socket socket, Context serverContext, AbstractServiceRegister serviceRegister) throws IOException;
 }

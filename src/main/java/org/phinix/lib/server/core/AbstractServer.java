@@ -25,6 +25,11 @@ import java.util.concurrent.Executors;
  * and managing client connections to the server.
  *
  * @see Server
+ * @see Manageable
+ * @see Worker
+ * @see WorkerFactory
+ * @see AbstractServiceRegister
+ * @see AbstractTaskExecutor
  */
 public abstract class AbstractServer implements Server {
     private static final Logger logger = LogManager.getLogger();

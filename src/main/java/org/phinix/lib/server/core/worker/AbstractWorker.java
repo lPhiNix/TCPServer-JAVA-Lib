@@ -13,17 +13,32 @@ import org.phinix.lib.common.util.MessagesManager;
 import java.io.IOException;
 import java.net.Socket;
 
+/**
+ * Abstract implementation of the {@link Worker} interface.
+ * This class provides basic functionality for handling client communication.
+ *
+ * @see Worker
+ */
 public abstract class AbstractWorker implements Worker {
     private static final Logger logger = LogManager.getLogger();
 
-    protected final Socket socket;
-    protected final MessagesManager messagesManager;
-    protected final AbstractServiceRegister serviceRegister;
-    protected final Context serverContext;
-    protected AbstractTaskExecutor asyncClientTaskExecutor;
-    protected RoomImpl currentRoomImpl;
-    protected boolean isRunning;
+    protected final Socket socket; // Client socket
+    protected final MessagesManager messagesManager; // Messages manager for client communication
+    protected final AbstractServiceRegister serviceRegister; // Service register
+    protected final Context serverContext; // Server context
+    protected AbstractTaskExecutor asyncClientTaskExecutor; // Executor for asynchronous client tasks
+    protected RoomImpl currentRoomImpl; // Current room the worker is in
+    protected boolean isRunning; // Flag indicating whether the worker is running
 
+    /**
+     * Constructs an AbstractWorker with the specified parameters.
+     *
+     * @param socket the client socket
+     * @param serverContext the server context
+     * @param serviceRegister the service register
+     * @param taskExecutor the executor for asynchronous client tasks
+     * @throws IOException if an I/O error occurs
+     */
     public AbstractWorker(Socket socket,
                           Context serverContext,
                           AbstractServiceRegister serviceRegister,
@@ -39,6 +54,10 @@ public abstract class AbstractWorker implements Worker {
         isRunning = true;
     }
 
+    /**
+     * Runs the worker, handling client communication.
+     * This method is executed in a separate thread.
+     */
     @Override @SuppressWarnings("unchecked")
     public void run() {
         try {
@@ -60,6 +79,12 @@ public abstract class AbstractWorker implements Worker {
         }
     }
 
+    /**
+     * Listens for messages from the client in a loop.
+     *
+     * @return {@code true} if the loop should continue, {@code false} otherwise
+     * @throws IOException if an I/O error occurs
+     */
     protected boolean listenLoop() throws IOException {
         String line;
         if ((line = messagesManager.receiveMessage()) != null) {
@@ -70,43 +95,88 @@ public abstract class AbstractWorker implements Worker {
         return false;
     }
 
+    /**
+     * Listens for a message from the client.
+     * This method should be implemented by subclasses to handle client messages.
+     *
+     * @param line the message received from the client
+     * @throws IOException if an I/O error occurs
+     */
     @Override
     public abstract void listen(String line) throws IOException;
 
+    /**
+     * Returns the messages manager for client communication.
+     *
+     * @return the messages manager
+     */
     @Override
     public MessagesManager getMessagesManager() {
         return messagesManager;
     }
 
+    /**
+     * Returns the service register.
+     *
+     * @return the service register
+     */
     @Override
     public AbstractServiceRegister getServiceRegister() {
         return serviceRegister;
     }
 
+    /**
+     * Returns the server context.
+     *
+     * @return the server context
+     */
     @Override
     public Context getServerContext() {
         return serverContext;
     }
 
+    /**
+     * Returns the current room the worker is in.
+     *
+     * @return the current room
+     */
     @Override
     public RoomImpl getCurrentRoom() {
         return currentRoomImpl;
     }
 
+    /**
+     * Sets the current room the worker is in.
+     *
+     * @param roomImpl the current room
+     */
     @Override
     public void setCurrentRoom(RoomImpl roomImpl) {
         this.currentRoomImpl = roomImpl;
     }
 
+    /**
+     * Returns the client's address.
+     *
+     * @return the client's address
+     */
     @Override
     public String getClientAddress() {
         return socket.getInetAddress().getHostAddress();
     }
 
+    /**
+     * Returns the client socket.
+     *
+     * @return the client socket
+     */
     public Socket getSocket() {
         return socket;
     }
 
+    /**
+     * Closes the connection to the client.
+     */
     @Override
     public void closeConnection() {
         isRunning = false;

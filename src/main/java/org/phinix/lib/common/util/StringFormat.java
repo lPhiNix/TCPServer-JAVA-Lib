@@ -1,6 +1,16 @@
 package org.phinix.lib.common.util;
 
+/**
+ * Utility class for string formatting operations.
+ */
 public class StringFormat {
+
+    /**
+     * Hides all characters of a password except the first character.
+     *
+     * @param password the password to hide
+     * @return the hidden password
+     */
     public static String hidePassword(String password) {
         if (password == null || password.length() <= 1) {
             return password;

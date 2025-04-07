@@ -1,7 +1,7 @@
 package org.phinix.lib.server.core;
 
 /**
- * Represents a server that can be managed and controlled.
+ * {@code Server} interface represents a server that can be managed and controlled.
  * This interface extends {@link Manageable} and provides methods to start and stop the server.
  *
  * @see Manageable

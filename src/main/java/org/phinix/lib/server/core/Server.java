@@ -1,10 +1,20 @@
 package org.phinix.lib.server.core;
 
-import org.phinix.lib.server.core.worker.Worker;
-
-import java.util.List;
-
+/**
+ * Represents a server that can be managed and controlled.
+ * This interface extends {@link Manageable} and provides methods to start and stop the server.
+ *
+ * @see Manageable
+ */
 public interface Server extends Manageable {
+
+    /**
+     * Starts the server and begins accepting client connections.
+     */
     void start();
+
+    /**
+     * Stops the server and closes all client connections.
+     */
     void stop();
 }

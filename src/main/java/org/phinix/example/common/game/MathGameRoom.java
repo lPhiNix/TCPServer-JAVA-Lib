@@ -14,7 +14,7 @@ public class MathGameRoom extends RoomImpl {
 
     @Override
     public void startSession() {
-        //session = new MathGame(clients, );
+       // session = new MathGame(clients, clients.get(0).get);
 
         try {
             session.start();

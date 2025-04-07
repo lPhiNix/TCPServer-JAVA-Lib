@@ -17,18 +17,19 @@ public class ClientHandler extends AbstractWorker {
     private static final Logger logger = LogManager.getLogger();
 
     private final MathGameServerContext serverContext;
+    private final ServiceManager serviceRegister;
     private Player user = null;
 
-    public ClientHandler(Socket socket, MathGameServerContext serverContext) throws IOException {
-        super(socket, serverContext, new ServiceManager(), new ClientTaskExecutor(new TaskQueue<>()));
+    public ClientHandler(Socket socket, MathGameServerContext serverContext, ServiceManager serviceManager) throws IOException {
+        super(socket, serverContext, serviceManager, new ClientTaskExecutor(new TaskQueue<>()));
 
         this.serverContext = serverContext;
+        this.serviceRegister = serviceManager;
     }
 
     @Override @SuppressWarnings("unchecked")
     public void listen(String message) {
         CommandProcessor<ClientHandler> commandProcessor = getServiceRegister().getService(CommandProcessor.class);
-
         if (!commandProcessor.processCommand(message, this)) {
             getMessagesManager().sendMessage(getClientAddress() + ": " + message);
         }
@@ -46,6 +47,11 @@ public class ClientHandler extends AbstractWorker {
     @Override
     public MathGameServerContext getServerContext() {
         return serverContext;
+    }
+
+    @Override
+    public ServiceManager getServiceRegister() {
+        return serviceRegister;
     }
 
     public Player getCurrentUser() {

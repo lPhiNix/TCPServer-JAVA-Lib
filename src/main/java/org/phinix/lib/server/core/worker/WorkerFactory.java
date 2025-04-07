@@ -1,10 +1,11 @@
 package org.phinix.lib.server.core.worker;
 
 import org.phinix.lib.server.context.Context;
+import org.phinix.lib.server.service.AbstractServiceRegister;
 
 import java.io.IOException;
 import java.net.Socket;
 
 public interface WorkerFactory {
-    Worker createWorker(Socket socket, Context serverContext) throws IOException;
+    Worker createWorker(Socket socket, Context serverContext, AbstractServiceRegister serviceRegister) throws IOException;
 }

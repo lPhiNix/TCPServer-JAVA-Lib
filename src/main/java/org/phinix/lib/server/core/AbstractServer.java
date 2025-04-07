@@ -4,11 +4,13 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import org.phinix.example.server.service.ServiceManager;
 import org.phinix.lib.server.context.Context;
 import org.phinix.lib.server.context.ContextFactory;
 import org.phinix.lib.server.core.task.AbstractTaskExecutor;
 import org.phinix.lib.server.core.worker.Worker;
 import org.phinix.lib.server.core.worker.WorkerFactory;
+import org.phinix.lib.server.service.AbstractServiceRegister;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -23,6 +25,7 @@ public abstract class AbstractServer implements Server {
 
     protected final int port;
     protected final int maxUsers;
+    protected final AbstractServiceRegister serviceRegister;
     protected final AbstractTaskExecutor asyncGlobalTaskExecutor;
     protected ServerSocket serverSocket;
     protected boolean isRunning;
@@ -42,6 +45,8 @@ public abstract class AbstractServer implements Server {
         this.contextFactory = contextFactory;
         this.asyncGlobalTaskExecutor = taskExecutor;
 
+        this.serviceRegister = new ServiceManager();
+
         threadPool = Executors.newFixedThreadPool(maxUsers);
         connectedClients = new CopyOnWriteArrayList<>();
 
@@ -57,6 +62,8 @@ public abstract class AbstractServer implements Server {
         this.contextFactory = contextFactory;
         this.asyncGlobalTaskExecutor = taskExecutor;
         this.serverSocket = serverSocket;
+
+        this.serviceRegister = new ServiceManager();
 
         threadPool = Executors.newFixedThreadPool(maxUsers);
         connectedClients = new CopyOnWriteArrayList<>();
@@ -83,7 +90,7 @@ public abstract class AbstractServer implements Server {
                 Socket clientSocket = serverSocket.accept();
                 logger.log(Level.INFO, "New connection accepted from: {}", clientSocket.getInetAddress());
 
-                threadPool.submit(createNewClientWorker(clientSocket));
+                threadPool.submit(createNewClientWorker(clientSocket, serviceRegister));
             }
         } catch (IOException e) {
             logger.log(Level.FATAL, "Error initializing server: ", e);
@@ -93,9 +100,9 @@ public abstract class AbstractServer implements Server {
         }
     }
 
-    private Worker createNewClientWorker(Socket clientSocket) throws IOException {
+    private Worker createNewClientWorker(Socket clientSocket, AbstractServiceRegister serviceRegister) throws IOException {
         Context context = contextFactory.createServerContext(this);
-        Worker client = workerFactory.createWorker(clientSocket, context);
+        Worker client = workerFactory.createWorker(clientSocket, context, serviceRegister);
 
         addClient(client);
 

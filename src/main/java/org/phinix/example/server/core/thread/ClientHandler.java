@@ -44,6 +44,11 @@ public class ClientHandler extends AbstractWorker {
         return super.getClientAddress();
     }
 
+    @Override
+    public TCPServerContext getServerContext() {
+        return serverContext;
+    }
+
     public Player getCurrentUser() {
         return user;
     }

@@ -1,6 +1,9 @@
 package org.phinix.example.server.service.services;
 
+import org.phinix.example.common.model.Equation;
 import org.phinix.lib.server.service.services.AbstractPersistenceDataManager;
+
+import java.util.Random;
 
 public class MathEquationPersistenceManager extends AbstractPersistenceDataManager {
 
@@ -12,6 +15,14 @@ public class MathEquationPersistenceManager extends AbstractPersistenceDataManag
 
     @Override
     protected boolean isValidDataLine(String line) {
-        return false;
+        return true;
+    }
+
+
+    public Equation getRandomEquation() {
+        Random random = new Random();
+        int ranNum = random.nextInt(1, getEquationAmount());
+
+        return new Equation(super.getDataLine(ranNum));
     }
 }

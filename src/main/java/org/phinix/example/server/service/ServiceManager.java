@@ -1,6 +1,7 @@
 package org.phinix.example.server.service;
 
 import org.phinix.example.server.command.CommandFactory;
+import org.phinix.example.server.service.services.MathEquationPersistenceManager;
 import org.phinix.example.server.service.services.PlayerManager;
 import org.phinix.lib.server.service.AbstractServiceRegister;
 import org.phinix.lib.server.service.services.CommandProcessor;
@@ -12,6 +13,7 @@ public class ServiceManager extends AbstractServiceRegister {
         registerService(PlayerManager.class, new PlayerManager());
         registerService(CommandProcessor.class, new CommandProcessor<>(new CommandFactory()));
         registerService(RoomManager.class, new RoomManager<>());
+        registerService(MathEquationPersistenceManager.class, new MathEquationPersistenceManager());
 
         return getAmountRegisterService();
     }

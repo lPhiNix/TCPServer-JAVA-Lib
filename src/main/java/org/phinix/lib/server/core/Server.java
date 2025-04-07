@@ -6,6 +6,5 @@ import java.util.List;
 
 public interface Server extends Manageable {
     void start();
-    List<Worker> getConnectedClients();
     void stop();
 }

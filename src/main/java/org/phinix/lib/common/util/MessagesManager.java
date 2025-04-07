@@ -27,11 +27,6 @@ public class MessagesManager {
 
         this.input = createSocketInput();
         this.output = createSocketOutput();
-
-        if (input == null || output == null) {
-            logger.log(Level.FATAL, "Error connecting client-server I/O");
-            throw new IOException();
-        }
     }
 
     public void sendMessage(String message) {
@@ -53,16 +48,32 @@ public class MessagesManager {
     }
 
     public BufferedReader createSocketInput() throws IOException {
+        if (socket == null) {
+            return null;
+        }
+
         return new BufferedReader(new InputStreamReader(socket.getInputStream()));
     }
 
     public PrintWriter createSocketOutput() throws IOException {
+        if (socket == null) {
+            return null;
+        }
+
         return new PrintWriter(socket.getOutputStream(), true);
     }
 
-    public static void broadcast(Collection<Worker> clients, String message) {
+    public static <W extends Worker> void broadcast(Collection<W> clients, String message) {
         for (Worker client : clients) {
             client.getMessagesManager().sendMessage(message);
+        }
+    }
+
+    public static <W extends Worker> void broadcastLess(Collection<W> clients, W less, String message) {
+        for (Worker client : clients) {
+            if (!client.equals(less)) {
+                client.getMessagesManager().sendMessage(message);
+            }
         }
     }
 }

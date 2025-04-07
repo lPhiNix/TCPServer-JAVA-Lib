@@ -10,8 +10,4 @@ public class MathGameServerContext extends Context {
         super(server);
         this.server = server;
     }
-
-    public void nose() {
-        server.nose();
-    }
 }

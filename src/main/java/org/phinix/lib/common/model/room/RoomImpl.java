@@ -1,4 +1,4 @@
-package org.phinix.lib.common.model;
+package org.phinix.lib.common.model.room;
 
 import org.phinix.lib.common.util.MessagesManager;
 import org.phinix.lib.server.core.worker.Worker;
@@ -8,21 +8,20 @@ import org.phinix.lib.server.session.game.Game;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-public abstract class AbstractRoom implements Room {
+public class RoomImpl implements Room {
     protected int maxUsers;
 
     protected String roomName;
     protected List<Worker> clients;
     protected Session session;
 
-    public AbstractRoom(String roomName, Worker owner) {
+    public RoomImpl(String roomName, Worker owner, int maxUsers) {
         this.roomName = roomName;
+        this.maxUsers = maxUsers;
         this.clients = new CopyOnWriteArrayList<>();
         this.clients.add(owner);
         owner.setCurrentRoom(this);
     }
-
-    public AbstractRoom() {}
 
     public synchronized void addClient(Worker client) {
         if (clients.size() >= maxUsers) {
@@ -62,7 +61,7 @@ public abstract class AbstractRoom implements Room {
         }
     }
 
-    public abstract void startSession();
+    public void startSession() {}
 
     public boolean isEmpty() {
         return clients.isEmpty();

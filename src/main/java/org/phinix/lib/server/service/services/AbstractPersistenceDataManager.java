@@ -62,6 +62,10 @@ public abstract class AbstractPersistenceDataManager implements Service {
         return data.get(index);
     }
 
+    public int getEquationAmount() {
+        return data.size();
+    }
+
     protected void reloadData() {
         data = loadData();
     }

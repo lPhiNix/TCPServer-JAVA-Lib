@@ -3,8 +3,8 @@ package org.phinix.lib.server.service.services;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.phinix.lib.common.model.AbstractRoom;
-import org.phinix.lib.common.model.Room;
+import org.phinix.lib.common.model.room.RoomImpl;
+import org.phinix.lib.common.model.room.Room;
 import org.phinix.lib.server.core.worker.Worker;
 import org.phinix.lib.server.service.Service;
 
@@ -22,15 +22,15 @@ public class RoomManager<R extends Room> implements Service {
     }
 
     @SuppressWarnings("unchecked")
-    public synchronized void createRoom(String roomName, Worker owner) {
+    public synchronized void createRoom(String roomName, Worker owner, int maxUsers) {
         if (rooms.containsKey(roomName)) {
             owner.getMessagesManager().sendMessage("This room already exists!");
             return;
         }
 
         try {
-            Constructor<R> constructor = (Constructor<R>) AbstractRoom.class.getConstructor(String.class, Worker.class);
-            R room = constructor.newInstance(roomName, owner);
+            Constructor<? extends Room> constructor = RoomImpl.class.getConstructor(String.class, Worker.class, int.class);
+            R room = (R) constructor.newInstance(roomName, owner, maxUsers);
 
             rooms.put(roomName, room);
 

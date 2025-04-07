@@ -32,7 +32,6 @@ public class ClientHandler extends AbstractWorker {
         if (!commandProcessor.processCommand(message, this)) {
             getMessagesManager().sendMessage(getClientAddress() + ": " + message);
         }
-        serverContext.nose();
     }
 
     @Override

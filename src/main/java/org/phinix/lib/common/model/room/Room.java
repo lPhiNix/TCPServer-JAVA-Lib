@@ -1,4 +1,4 @@
-package org.phinix.lib.common.model;
+package org.phinix.lib.common.model.room;
 
 import org.phinix.lib.server.core.worker.Worker;
 import org.phinix.lib.server.session.Session;

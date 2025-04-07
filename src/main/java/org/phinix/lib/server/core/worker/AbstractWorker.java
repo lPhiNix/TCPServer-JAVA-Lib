@@ -4,7 +4,7 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import org.phinix.lib.common.model.AbstractRoom;
+import org.phinix.lib.common.model.room.RoomImpl;
 import org.phinix.lib.server.context.Context;
 import org.phinix.lib.server.core.task.AbstractTaskExecutor;
 import org.phinix.lib.server.service.AbstractServiceRegister;
@@ -21,7 +21,7 @@ public abstract class AbstractWorker implements Worker {
     protected final AbstractServiceRegister serviceRegister;
     protected final Context serverContext;
     protected AbstractTaskExecutor asyncClientTaskExecutor;
-    protected AbstractRoom currentAbstractRoom;
+    protected RoomImpl currentRoomImpl;
     protected boolean isRunning;
 
     public AbstractWorker(Socket socket,
@@ -89,13 +89,13 @@ public abstract class AbstractWorker implements Worker {
     }
 
     @Override
-    public AbstractRoom getCurrentRoom() {
-        return currentAbstractRoom;
+    public RoomImpl getCurrentRoom() {
+        return currentRoomImpl;
     }
 
     @Override
-    public void setCurrentRoom(AbstractRoom abstractRoom) {
-        this.currentAbstractRoom = abstractRoom;
+    public void setCurrentRoom(RoomImpl roomImpl) {
+        this.currentRoomImpl = roomImpl;
     }
 
     @Override

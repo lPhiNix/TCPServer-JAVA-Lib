@@ -10,14 +10,11 @@ public class MathGameServer extends AbstractServer {
         super(
                 port,
                 maxUsers,
-                server -> new MathGameServerContext((MathGameServer) server),
+                server ->
+                        new MathGameServerContext((MathGameServer) server),
                 (socket, serverContext) ->
                         new ClientHandler(socket, (MathGameServerContext) serverContext),
                 new GlobalTaskExecutor(new TaskQueue<>())
         );
-    }
-
-    public void nose() {
-        System.out.println("nose");
     }
 }

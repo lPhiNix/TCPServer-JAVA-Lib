@@ -30,7 +30,7 @@ public class Equation {
         return mathExpression;
     }
 
-    public boolean isValid() {
+    public boolean isValid(Expression expression) {
         try {
             expression.setVariable(VARIABLE, 1.0);
             expression.evaluate();
@@ -62,7 +62,19 @@ public class Equation {
         return built;
     }
 
-    public double evaluateIn(double x) {
+    private double evaluateIn(double x) {
         return expression.setVariable(VARIABLE, x).evaluate();
+    }
+
+    public boolean tryGuessRoot(String mathExpression) {
+        Expression resultExpression = buildExpression(mathExpression);
+
+        if (!isValid(expression)) {
+            return false;
+        }
+
+        double result = resultExpression.evaluate();
+
+        return evaluateIn(result) == 0;
     }
 }

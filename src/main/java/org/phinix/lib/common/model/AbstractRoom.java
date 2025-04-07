@@ -37,7 +37,7 @@ public abstract class AbstractRoom implements Room {
         MessagesManager.broadcast(clients, client.getClientAddress() + "has join to this room");
 
         if (clients.size() == maxUsers) {
-            session.start();
+            startSession();
         }
     }
 
@@ -61,6 +61,8 @@ public abstract class AbstractRoom implements Room {
             }
         }
     }
+
+    public abstract void startSession();
 
     public boolean isEmpty() {
         return clients.isEmpty();

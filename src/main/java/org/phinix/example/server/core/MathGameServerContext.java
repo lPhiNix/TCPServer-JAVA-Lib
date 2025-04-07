@@ -2,11 +2,11 @@ package org.phinix.example.server.core;
 
 import org.phinix.lib.server.context.Context;
 
-public class TCPServerContext extends Context {
+public class MathGameServerContext extends Context {
 
-    private final TCPServer server;
+    private final MathGameServer server;
 
-    public TCPServerContext(TCPServer server) {
+    public MathGameServerContext(MathGameServer server) {
         super(server);
         this.server = server;
     }

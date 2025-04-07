@@ -1,10 +1,10 @@
 package org.phinix.example.main;
 
-import org.phinix.example.server.core.TCPServer;
+import org.phinix.example.server.core.MathGameServer;
 
 public class ServerMain {
     public static void main(String[] args) {
-        TCPServer server = new TCPServer(12345, 20);
+        MathGameServer server = new MathGameServer(12345, 20);
         server.start();
     }
 }

@@ -15,7 +15,6 @@ public abstract class AbstractRoom implements Room {
     protected List<Worker> clients;
     protected Session session;
 
-
     public AbstractRoom(String roomName, Worker owner) {
         this.roomName = roomName;
         this.clients = new CopyOnWriteArrayList<>();
@@ -38,7 +37,7 @@ public abstract class AbstractRoom implements Room {
         MessagesManager.broadcast(clients, client.getClientAddress() + "has join to this room");
 
         if (clients.size() == maxUsers) {
-            session.start();
+            startSession();
         }
     }
 
@@ -62,6 +61,8 @@ public abstract class AbstractRoom implements Room {
             }
         }
     }
+
+    public abstract void startSession();
 
     public boolean isEmpty() {
         return clients.isEmpty();

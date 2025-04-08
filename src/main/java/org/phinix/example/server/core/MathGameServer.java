@@ -15,6 +15,7 @@ public class MathGameServer extends AbstractServer {
                         new MathGameServerContext((MathGameServer) server),
                 (socket, serverContext, serviceRegister) ->
                         new ClientHandler(socket, (MathGameServerContext) serverContext, (ServiceManager) serviceRegister),
+                ServiceManager::new,
                 new GlobalTaskExecutor(new TaskQueue<>())
         );
     }

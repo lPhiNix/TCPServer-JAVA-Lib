@@ -4,13 +4,13 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import org.phinix.example.server.service.ServiceManager;
 import org.phinix.lib.server.context.Context;
 import org.phinix.lib.server.context.ContextFactory;
 import org.phinix.lib.server.core.task.AbstractTaskExecutor;
 import org.phinix.lib.server.core.worker.Worker;
 import org.phinix.lib.server.core.worker.WorkerFactory;
 import org.phinix.lib.server.service.AbstractServiceRegister;
+import org.phinix.lib.server.service.ServiceRegisterWorker;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -20,22 +20,28 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-// todo example does not finish
 /**
  * {@code AbstractServer} class is an abstract implementation of the {@link Server} interface.
  * This class provides basic functionality for starting, stopping,
  * and managing client connections to the server.
  * <p>
  * Use example:
- * <pre>
- *     public class ServerImpl extends AbstractServer {
- *     public ServerImpl(int port, int maxUsers) {
- *         super(
+ * <pre>{@code
+ * public class MyServer extends AbstractServer {
  *
- *         );
+ *         public MyServer(int port, int maxUsers) {
+ *             super(
+ *                 port,
+ *                 maxUsers,
+ *                 server -> new MyServerContext((MyServer) server),
+ *                 (socket, serverContext, serviceRegister) ->
+ *                      new MyWorker(socket, (MyServerContext) serverContext, (AbstractServiceRegister) serviceRegister),
+ *                 MyServiceManager::new,
+ *                 new MyTaskExecutor(new TaskQueue<>())
+ *             );
+ *         }
  *     }
  * }
- * </pre>
  *
  * @see Server
  * @see Manageable
@@ -69,7 +75,11 @@ public abstract class AbstractServer implements Server {
      * @param workerFactory the factory for creating Worker instances
      * @param taskExecutor the executor for global asynchronous tasks
      */
-    public AbstractServer(int port, int maxUsers, ContextFactory contextFactory, WorkerFactory workerFactory, AbstractTaskExecutor taskExecutor) {
+    public AbstractServer(int port, int maxUsers,
+                          ContextFactory contextFactory,
+                          WorkerFactory workerFactory,
+                          ServiceRegisterWorker serviceRegisterWorker,
+                          AbstractTaskExecutor taskExecutor) {
         logger.log(Level.DEBUG, "Initializing");
 
         this.port = port;
@@ -78,12 +88,12 @@ public abstract class AbstractServer implements Server {
         this.contextFactory = contextFactory;
         this.asyncGlobalTaskExecutor = taskExecutor;
 
-        this.serviceRegister = new ServiceManager();
+        this.serviceRegister = serviceRegisterWorker.createServiceRegister(); // Instancing new ServiceRegister
 
-        threadPool = Executors.newFixedThreadPool(maxUsers);
+        threadPool = Executors.newFixedThreadPool(maxUsers); // ThreadPool with client limit
         connectedClients = new CopyOnWriteArrayList<>();
 
-        isRunning = false;
+        isRunning = false; // initializing running in false
     }
 
     /**
@@ -97,7 +107,12 @@ public abstract class AbstractServer implements Server {
      * @param taskExecutor the executor for global asynchronous tasks
      * @param serverSocket the external server socket to be used
      */
-    public AbstractServer(int port, int maxUsers, ContextFactory contextFactory, WorkerFactory workerFactory, AbstractTaskExecutor taskExecutor, ServerSocket serverSocket) {
+    public AbstractServer(int port, int maxUsers,
+                          ContextFactory contextFactory,
+                          WorkerFactory workerFactory,
+                          ServiceRegisterWorker serviceRegisterWorker,
+                          AbstractTaskExecutor taskExecutor,
+                          ServerSocket serverSocket) {
         logger.log(Level.DEBUG, "Initializing with external socket");
 
         this.port = port;
@@ -107,12 +122,12 @@ public abstract class AbstractServer implements Server {
         this.asyncGlobalTaskExecutor = taskExecutor;
         this.serverSocket = serverSocket;
 
-        this.serviceRegister = new ServiceManager();
+        this.serviceRegister = serviceRegisterWorker.createServiceRegister(); // Instancing new ServiceRegister
 
-        threadPool = Executors.newFixedThreadPool(maxUsers);
+        threadPool = Executors.newFixedThreadPool(maxUsers); // ThreadPool with client limit
         connectedClients = new CopyOnWriteArrayList<>();
 
-        isRunning = false;
+        isRunning = false; // initializing running in false
     }
 
     /**

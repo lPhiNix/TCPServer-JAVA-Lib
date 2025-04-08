@@ -35,7 +35,7 @@ import java.net.Socket;
  *         }
  *     }
  * }
- * </pre>}
+ * }
  *
  * @see Worker
  * @see WorkerFactory

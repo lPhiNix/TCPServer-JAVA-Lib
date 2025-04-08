@@ -1,5 +1,6 @@
 package org.phinix.example.common.game;
 
+import org.phinix.example.common.game.ScoreManager;
 import org.phinix.example.common.model.Equation;
 import org.phinix.example.server.core.thread.ClientHandler;
 import org.phinix.example.server.service.ServiceManager;
@@ -11,21 +12,24 @@ import org.phinix.lib.server.service.services.RoomManager;
 import org.phinix.lib.server.session.game.Game;
 
 import java.util.List;
-import java.util.Queue;
 
 public class MathGame implements Game {
     private final List<ClientHandler> players;
     private final RoomManager roomManager;
     private final MathEquationPersistenceManager equationProposer;
     private final ScoreManager[] scoreManagers;
+    private final int rounds;
+    private int currentRound = 0;
     private Equation currentEquation;
     private int currentTurnIndex = 0;
+    private boolean gameOver = false;
 
-    public MathGame(List<ClientHandler> players, ServiceManager serviceManager) {
+    public MathGame(List<ClientHandler> players, ServiceManager serviceManager, int rounds) {
         this.players = players;
         this.equationProposer = serviceManager.getService(MathEquationPersistenceManager.class);
         this.roomManager = serviceManager.getService(RoomManager.class);
         this.scoreManagers = new ScoreManager[players.size()];
+        this.rounds = rounds;
 
         PlayerManager playerManager = serviceManager.getService(PlayerManager.class);
 
@@ -42,6 +46,7 @@ public class MathGame implements Game {
     @Override
     public void start() {
         MessagesManager.broadcast(players, "Initializing new game!");
+        currentRound = 1;
         announceTurn();
     }
 
@@ -64,17 +69,16 @@ public class MathGame implements Game {
 
     private void proposeEquation(ClientHandler client) {
         currentEquation = equationProposer.getRandomEquation();
-        MessagesManager.broadcastLess(players, client, "Equation that " + client.getClientAddress() + " have to resolve" );
+        MessagesManager.broadcastLess(players, client, "Equation that " + client.getClientAddress() + " has to resolve");
         MessagesManager.broadcastLess(players, client, "Equation: " + currentEquation.getMathExpression());
         client.getMessagesManager().sendMessage("RESOLVE THIS EQUATION: " + currentEquation.getMathExpression());
-
     }
 
     public void tryGuessRoot(String mathExpression, ClientHandler player) {
         ClientHandler turn = players.get(currentTurnIndex);
 
         if (!turn.equals(player)) {
-            player.getMessagesManager().sendMessage("it is not your turn!");
+            player.getMessagesManager().sendMessage("It is not your turn!");
             return;
         }
 
@@ -88,14 +92,16 @@ public class MathGame implements Game {
                 player.getMessagesManager().sendMessage("INCORRECT: " + currentEquation.getMathExpression() + " != 0; x = " + mathExpression + "!");
             }
 
-            nextTurn();
             checkGameOver();
+            nextTurn();
         }
     }
 
     @Override
     public void checkGameOver() {
-
+        if (currentRound >= rounds) {
+            end();
+        }
     }
 
     @Override
@@ -104,7 +110,7 @@ public class MathGame implements Game {
 
         if (players.size() < 2) {
             roomManager.leaveRoom(players.getFirst(), true);
-            // game0ver = true
+            gameOver = true;
         }
 
         if (!isTurn().equals(client)) {
@@ -117,16 +123,17 @@ public class MathGame implements Game {
 
     @Override
     public boolean isEnd() {
-        return false;
+        return gameOver;
     }
 
     @Override
     public void setIsEnd(boolean isEnd) {
-
+        gameOver = isEnd;
     }
 
     @Override
     public void end() {
-
+        gameOver = true;
+        MessagesManager.broadcast(players, "Game Over! Total rounds completed: " + rounds);
     }
 }

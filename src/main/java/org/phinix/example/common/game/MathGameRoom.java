@@ -3,26 +3,25 @@ package org.phinix.example.common.game;
 import org.phinix.example.server.core.thread.ClientHandler;
 import org.phinix.example.server.service.ServiceManager;
 import org.phinix.lib.common.model.room.RoomImpl;
-import org.phinix.lib.server.core.worker.Worker;
-
-import java.util.ArrayList;
 import java.util.List;
 
 public class MathGameRoom extends RoomImpl {
     private final int maxPlayers;
+    private final int rounds;
     private MathGame session;
 
-    public MathGameRoom(String roomName, ClientHandler player, int maxPlayers) {
+    public MathGameRoom(String roomName, ClientHandler player, int maxPlayers, int rounds) {
         super(roomName, player, maxPlayers);
 
         this.maxPlayers = maxPlayers;
+        this.rounds = rounds;
     }
 
     @Override
     public void startSession() {
         List<ClientHandler> players = castClientsList(clients, ClientHandler.class);
 
-        session = new MathGame(players, (ServiceManager) clients.getFirst().getServiceRegister());
+        session = new MathGame(players, (ServiceManager) clients.getFirst().getServiceRegister(), rounds);
 
         try {
             session.start();

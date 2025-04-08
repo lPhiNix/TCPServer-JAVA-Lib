@@ -24,7 +24,7 @@ public class RoomManager<R extends Room, W extends Worker> implements Service {
         rooms = new ConcurrentHashMap<>();
     }
 
-    public synchronized void createRoom(String roomName, Worker owner, int maxUsers) {
+    public synchronized void createRoom(String roomName, Worker owner, int maxUsers, int rounds) {
         if (rooms.containsKey(roomName)) {
             owner.getMessagesManager().sendMessage("This room already exists!");
             return;
@@ -32,8 +32,8 @@ public class RoomManager<R extends Room, W extends Worker> implements Service {
 
         try {
             logger.log(Level.DEBUG, "Creating room with type: {}", roomType.getName());
-            Constructor<R> constructor = roomType.getConstructor(String.class, workerType, int.class);
-            R room = constructor.newInstance(roomName, owner, maxUsers);
+            Constructor<R> constructor = roomType.getConstructor(String.class, workerType, int.class, int.class);
+            R room = constructor.newInstance(roomName, owner, maxUsers, rounds);
 
             rooms.put(roomName, room);
 

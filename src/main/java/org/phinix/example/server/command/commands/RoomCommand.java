@@ -21,15 +21,16 @@ public class RoomCommand implements Command<ClientHandler> {
                 (args.length == 3 && !args[0].equals("create"))) {
 
             client.getMessagesManager().sendMessage("Help: " + CommandFactory.getCommandSymbol() +
-                    COMMAND_NAME + " <create|join|leave|list> [roomName] [maxPlayers > 1]");
+                    COMMAND_NAME + " <create|join|leave|list> [roomName] [maxPlayers > 1] [rounds > 1]");
             return;
         }
 
         if (args[0].equals("create")) {
             int maxUsers = Integer.parseInt(args[2]);
-            if (maxUsers <= 1) {
+            int rounds = Integer.parseInt(args[3]);
+            if (maxUsers < 2 || rounds < 2) {
                 client.getMessagesManager().sendMessage("Help: " + CommandFactory.getCommandSymbol() +
-                        COMMAND_NAME + " <create|join|leave|list> [roomName] [maxPlayers > 1]");
+                        COMMAND_NAME + " <create|join|leave|list> [roomName] [maxPlayers > 1] [rounds > 1]");
 
                 return;
             }
@@ -53,12 +54,12 @@ public class RoomCommand implements Command<ClientHandler> {
         String action = args[0];
 
         switch (action) {
-            case "create" -> roomManager.createRoom(args[1], client, Integer.parseInt(args[2]));
+            case "create" -> roomManager.createRoom(args[1], client, Integer.parseInt(args[2]), Integer.parseInt(args[3]));
             case "join" -> roomManager.joinRoom(args[1], client);
             case "leave" -> roomManager.leaveRoom(client, false);
             case "list" -> roomManager.printAllActiveRooms(client);
             default -> client.getMessagesManager().sendMessage("Help: " + CommandFactory.getCommandSymbol() +
-                    COMMAND_NAME + " <create|join|leave|list> [roomName] [maxPlayers > 1]");
+                    COMMAND_NAME + " <create|join|leave|list> [roomName] [maxPlayers > 1] [rounds > 1]");
         }
     }
 

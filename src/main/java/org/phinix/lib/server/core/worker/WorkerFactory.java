@@ -8,6 +8,7 @@ import java.net.Socket;
 
 /**
  * {@code WorkerFactory} interface is factory interface for creating {@link Worker} instances.
+ * This interface is used for create instance of a concrete Worker class type.
  * <p>
  * This interface implements {@code Factory Design Pattern}
  *
@@ -24,5 +25,8 @@ public interface WorkerFactory {
      * @return the created Worker
      * @throws IOException if an I/O error occurs
      */
-    Worker createWorker(Socket socket, Context serverContext, AbstractServiceRegister serviceRegister) throws IOException;
+    Worker createWorker(Socket socket,
+                        Context serverContext,
+                        AbstractServiceRegister serviceRegister)
+            throws IOException;
 }

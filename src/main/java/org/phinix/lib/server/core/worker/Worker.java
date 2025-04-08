@@ -3,15 +3,20 @@ package org.phinix.lib.server.core.worker;
 import org.phinix.lib.common.model.room.RoomImpl;
 import org.phinix.lib.server.context.Context;
 import org.phinix.lib.server.core.Manageable;
+import org.phinix.lib.server.core.task.AbstractTaskExecutor;
+import org.phinix.lib.server.core.task.Task;
 import org.phinix.lib.server.service.AbstractServiceRegister;
 import org.phinix.lib.common.socket.MessagesManager;
 
 import java.io.IOException;
 
 /**
- * {@code Worker} interface represents a server running async worker thread
- * that handles client communication.
- * This interface extends {@link Runnable} and {@link Manageable}.
+ * {@code Worker} interface represents a server running async worker thread implementing
+ * {@link Runnable} interface that handles client communication,
+ * and it realizes client async operations in the multi-thread server.
+ * <p>
+ * {@code Manageable} interface permits this server run global async {@link Task}
+ * using {@link AbstractTaskExecutor} instance.
  *
  * @see Runnable
  * @see Manageable

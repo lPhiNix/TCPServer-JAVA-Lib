@@ -13,30 +13,33 @@ import org.phinix.lib.common.socket.MessagesManager;
 import java.io.IOException;
 import java.net.Socket;
 
-// todo example does not finish
 /**
  * {@code AbstractWorker} class is an abstract implementation of the {@link Worker} interface.
  * This class provides basic functionality for handling client communication.
  *
  * <p>
  * Use example:
- * <pre>
- *     public class ServerImpl extends AbstractServer {
- *     public ServerImpl(int port, int maxUsers) {
- *         super(
+ * <pre>{@code
+ * public class ClientHandler extends AbstractWorker {
  *
- *         );
+ *     public ClientHandler(Socket socket, ServiceManager serviceManager) throws IOException {
+ *         super(socket, serviceManager);
+ *         this.serviceRegister = serviceManager;
+ *     }
+ *
+ *     \@Override
+ *     public void listen(String message) {
+ *         CommandProcessor commandProcessor = getServiceRegister().getService(CommandProcessor.class);
+ *         if (!commandProcessor.processCommand(message, this)) {
+ *             getMessagesManager().sendMessage(getClientAddress() + ": " + message);
+ *         }
  *     }
  * }
- * </pre>
+ * </pre>}
  *
  * @see Worker
  * @see WorkerFactory
  * @see MessagesManager
- * @see AbstractServiceRegister
- * @see Context
- * @see AbstractTaskExecutor
- * @see RoomImpl
  */
 public abstract class AbstractWorker implements Worker {
     private static final Logger logger = LogManager.getLogger();
@@ -45,17 +48,17 @@ public abstract class AbstractWorker implements Worker {
     protected final MessagesManager messagesManager; // Messages manager for client communication
     protected final AbstractServiceRegister serviceRegister; // Service register
     protected final Context serverContext; // Server context
-    protected AbstractTaskExecutor asyncClientTaskExecutor; // Executor for asynchronous client tasks
+    protected AbstractTaskExecutor asyncClientTaskExecutor; // Executor for asynchronous client tasks (Raw param: <>)
     protected RoomImpl currentRoomImpl; // Current room the worker is in
     protected boolean isRunning; // Flag indicating whether the worker is running
 
     /**
      * Constructs an AbstractWorker with the specified parameters.
      *
-     * @param socket the client socket
-     * @param serverContext the server context
+     * @param socket          the client socket
+     * @param serverContext   the server context
      * @param serviceRegister the service register
-     * @param taskExecutor the executor for asynchronous client tasks
+     * @param taskExecutor    the executor for asynchronous client tasks
      * @throws IOException if an I/O error occurs
      */
     public AbstractWorker(Socket socket,
@@ -70,21 +73,24 @@ public abstract class AbstractWorker implements Worker {
         this.serverContext = serverContext;
         this.asyncClientTaskExecutor = taskExecutor;
 
-        isRunning = true;
+        isRunning = true; // initializing running in true
     }
 
     /**
-     * Runs the worker, handling client communication.
-     * This method is executed in a separate thread.
+     * Method {@code run()} from {@link Runnable} that will be executed when
+     * this thread start its live cycle.
      */
-    @Override @SuppressWarnings("unchecked")
+    @Override
+    @SuppressWarnings("unchecked")
     public void run() {
         try {
             logger.log(Level.INFO, "Listening client {}", socket.getInetAddress());
 
+            // Start Async Worker Task
             asyncClientTaskExecutor.start(this);
+
             while (isRunning) {
-                if (!listenLoop()) {
+                if (!listenLoop()) { // Listening always while worker is running
                     break;
                 }
             }
@@ -94,7 +100,7 @@ public abstract class AbstractWorker implements Worker {
             logger.log(Level.FATAL, "Error managing client input: ", e);
         } finally {
             logger.log(Level.INFO, "Stopping worker {}...", socket.getInetAddress());
-            closeConnection();
+            closeConnection(); // Closing connection in end of thread live cycle
         }
     }
 
@@ -107,16 +113,18 @@ public abstract class AbstractWorker implements Worker {
     protected boolean listenLoop() throws IOException {
         String line;
         if ((line = messagesManager.receiveMessage()) != null) {
-            listen(line);
+            listen(line); // Listening
             return true;
         }
 
-        return false;
+        return false; // If message is null, the connection with clients has ended.
     }
 
     /**
      * Listens for a message from the client.
      * This method should be implemented by subclasses to handle client messages.
+     * <p>
+     * In subclass will use this method to handle client message that iy receive
      *
      * @param line the message received from the client
      * @throws IOException if an I/O error occurs

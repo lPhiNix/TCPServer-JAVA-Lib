@@ -5,7 +5,8 @@ import org.phinix.lib.server.core.task.AbstractTaskExecutor;
 
 /**
  * {@code Manageable} interface is a marker interface for manageable components in the server.
- * Classes implementing this interface can implement running async {@link Task} instances.
+ * Classes implementing this interface can implement running async {@link Task} using a
+ * {@link AbstractTaskExecutor} instance.
  * <p>
  * This interface is implemented by instance of servers, workers and sessions
  *

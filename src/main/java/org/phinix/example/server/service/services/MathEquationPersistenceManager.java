@@ -18,10 +18,10 @@ public class MathEquationPersistenceManager extends AbstractPersistenceDataManag
         return true;
     }
 
-
     public Equation getRandomEquation() {
         Random random = new Random();
-        int ranNum = random.nextInt(1, getEquationAmount());
+        System.out.println(getEquationAmount());
+        int ranNum = random.nextInt(1, getEquationAmount() - 1);
 
         return new Equation(super.getDataLine(ranNum));
     }

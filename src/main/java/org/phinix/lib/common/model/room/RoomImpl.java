@@ -5,6 +5,7 @@ import org.phinix.lib.server.core.worker.Worker;
 import org.phinix.lib.server.session.Session;
 import org.phinix.lib.server.session.game.Game;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -83,6 +84,16 @@ public class RoomImpl implements Room {
                 session.setIsEnd(false);
             }
         }
+    }
+
+    protected  <W extends Worker> List<W> castClientsList(List<Worker> clients, Class<W> workerType) {
+        List<W> castedClients = new ArrayList<>();
+        for (Worker worker : clients) {
+            if (workerType.isInstance(worker)) {
+                castedClients.add(workerType.cast(worker));
+            }
+        }
+        return castedClients;
     }
 
     /**

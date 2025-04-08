@@ -16,24 +16,27 @@ public abstract class AbstractPersistenceDataManager implements Service {
 
     public AbstractPersistenceDataManager(String filePath) {
         this.filePath = filePath;
-
-        data = new ConcurrentHashMap<>();
+        logger.log(Level.DEBUG, "Initializing AbstractPersistenceDataManager with file path: {}", filePath);
+        data = loadData();
     }
 
     private ConcurrentHashMap<Integer, String> loadData() {
         File dataFile = new File(filePath);
+        logger.log(Level.DEBUG, "Loading data from file: {}", filePath);
         checkDataFile(dataFile);
 
         return parsePersistenceDataToVolatile();
     }
 
     private ConcurrentHashMap<Integer, String> parsePersistenceDataToVolatile() {
+        logger.log(Level.DEBUG, "Parsing persistence data to volatile map...");
         ConcurrentHashMap<Integer, String> data = new ConcurrentHashMap<>();
         int lineCount = 0;
         String fileLine;
 
         try (BufferedReader bufferedReader = new BufferedReader(new FileReader(filePath))) {
             while ((fileLine = bufferedReader.readLine()) != null) {
+                logger.log(Level.DEBUG, "Read line: {}", fileLine);
                 if (!isValidDataLine(fileLine)) {
                     logger.log(Level.WARN, "Invalid data line: {}", fileLine);
                     continue;
@@ -46,6 +49,7 @@ public abstract class AbstractPersistenceDataManager implements Service {
             logger.log(Level.FATAL, "Error while reading data file", e);
         }
 
+        logger.log(Level.DEBUG, "Finished parsing data, total lines read: {}", lineCount);
         return data;
     }
 
@@ -56,6 +60,7 @@ public abstract class AbstractPersistenceDataManager implements Service {
             logger.log(Level.FATAL, "{} data file does not found: ", filePath);
             throw new RuntimeException("Data file does not found.");
         }
+        logger.log(Level.DEBUG, "Data file exists: {}", filePath);
     }
 
     protected String getDataLine(int index) {

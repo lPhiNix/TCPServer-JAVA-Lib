@@ -1,5 +1,6 @@
 package org.phinix.lib.server.session.game;
 
+import org.phinix.example.server.core.thread.ClientHandler;
 import org.phinix.lib.server.session.Session;
 import org.phinix.lib.server.core.worker.Worker;
 
@@ -27,5 +28,5 @@ public interface Game extends Session {
      *
      * @param client the client that disconnected
      */
-    void handleDisconnect(Worker client);
+    <W extends Worker> void handleDisconnect(W client);
 }

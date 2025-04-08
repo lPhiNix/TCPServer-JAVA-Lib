@@ -2,10 +2,12 @@ package org.phinix.example.server.core.thread;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.phinix.example.common.game.MathGameRoom;
 import org.phinix.example.common.model.Player;
 import org.phinix.example.server.core.MathGameServerContext;
 import org.phinix.example.server.core.thread.task.ClientTaskExecutor;
 import org.phinix.example.server.service.ServiceManager;
+import org.phinix.lib.common.model.room.RoomImpl;
 import org.phinix.lib.server.core.task.TaskQueue;
 import org.phinix.lib.server.service.services.CommandProcessor;
 import org.phinix.lib.server.core.worker.AbstractWorker;
@@ -52,6 +54,16 @@ public class ClientHandler extends AbstractWorker {
     @Override
     public ServiceManager getServiceRegister() {
         return serviceRegister;
+    }
+
+    @Override
+    public MathGameRoom getCurrentRoom() {
+        return (MathGameRoom) super.getCurrentRoom();
+    }
+
+    @Override
+    public void setCurrentRoom(RoomImpl roomImpl) {
+        super.setCurrentRoom(roomImpl);
     }
 
     public Player getCurrentUser() {

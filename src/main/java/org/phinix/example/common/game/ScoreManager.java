@@ -1,4 +1,4 @@
-package org.phinix.example.common.game.score;
+package org.phinix.example.common.game;
 
 import org.phinix.example.common.model.Player;
 import org.phinix.example.server.service.services.PlayerManager;
@@ -8,17 +8,17 @@ public class ScoreManager {
     private final PlayerManager playerManager;
     private final Player thisPlayer;
     private final MessagesManager messagesManager;
-    private int tries;
+    private int successes;
 
     public ScoreManager(PlayerManager playerManager, Player currentPlayer, MessagesManager messagesManager) {
         this.playerManager = playerManager;
         this.thisPlayer = currentPlayer;
         this.messagesManager = messagesManager;
-        this.tries = 0;
+        this.successes = 0;
     }
 
-    public void incrementTries() {
-        tries++;
+    public void success() {
+        successes++;
     }
 
 

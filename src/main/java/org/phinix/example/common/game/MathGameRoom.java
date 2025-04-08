@@ -1,7 +1,12 @@
 package org.phinix.example.common.game;
 
 import org.phinix.example.server.core.thread.ClientHandler;
+import org.phinix.example.server.service.ServiceManager;
 import org.phinix.lib.common.model.room.RoomImpl;
+import org.phinix.lib.server.core.worker.Worker;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MathGameRoom extends RoomImpl {
     private final int maxPlayers;
@@ -15,12 +20,20 @@ public class MathGameRoom extends RoomImpl {
 
     @Override
     public void startSession() {
-       // session = new MathGame(clients, clients.get(0).get);
-        System.out.println("nose");
+        List<ClientHandler> players = castClientsList(clients, ClientHandler.class);
+
+        session = new MathGame(players, (ServiceManager) clients.getFirst().getServiceRegister());
+
         try {
             session.start();
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    public synchronized void tryGuessRoot(String mathExpression, ClientHandler client) {
+        if (session != null) {
+            session.tryGuessRoot(mathExpression, client);
         }
     }
 

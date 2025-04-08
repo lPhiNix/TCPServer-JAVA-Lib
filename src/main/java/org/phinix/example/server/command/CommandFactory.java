@@ -21,6 +21,7 @@ public class CommandFactory extends AbstractCommandFactory<ClientHandler> {
         registerCommand(LoginCommand.getCommandName(), LoginCommand.class);
         registerCommand(ShowUsersCommand.getCommandName(), ShowUsersCommand.class);
         registerCommand(RoomCommand.getCommandName(), RoomCommand.class);
+        registerCommand(ResolveCommand.getCommandName(), ResolveCommand.class);
 
         return getAmountRegisteredCommands();
     }

@@ -1,6 +1,5 @@
 package org.phinix.example.common.game;
 
-import org.phinix.example.common.game.score.ScoreManager;
 import org.phinix.example.common.model.Equation;
 import org.phinix.example.server.core.thread.ClientHandler;
 import org.phinix.example.server.service.ServiceManager;
@@ -12,6 +11,7 @@ import org.phinix.lib.server.service.services.RoomManager;
 import org.phinix.lib.server.session.game.Game;
 
 import java.util.List;
+import java.util.Queue;
 
 public class MathGame implements Game {
     private final List<ClientHandler> players;
@@ -49,7 +49,12 @@ public class MathGame implements Game {
         ClientHandler client = isTurn();
         MessagesManager.broadcastLess(players, client, "Turn of " + client.getClientAddress());
         client.getMessagesManager().sendMessage("It's your turn!");
+        proposeEquation(client);
+    }
 
+    private void nextTurn() {
+        currentTurnIndex = (currentTurnIndex + 1) % players.size();
+        announceTurn();
     }
 
     @Override
@@ -57,9 +62,35 @@ public class MathGame implements Game {
         return players.get(currentTurnIndex);
     }
 
-    private void proposeEquation() {
+    private void proposeEquation(ClientHandler client) {
         currentEquation = equationProposer.getRandomEquation();
+        MessagesManager.broadcastLess(players, client, "Equation that " + client.getClientAddress() + " have to resolve" );
+        MessagesManager.broadcastLess(players, client, "Equation: " + currentEquation.getMathExpression());
+        client.getMessagesManager().sendMessage("RESOLVE THIS EQUATION: " + currentEquation.getMathExpression());
 
+    }
+
+    public void tryGuessRoot(String mathExpression, ClientHandler player) {
+        ClientHandler turn = players.get(currentTurnIndex);
+
+        if (!turn.equals(player)) {
+            player.getMessagesManager().sendMessage("it is not your turn!");
+            return;
+        }
+
+        if (currentEquation != null) {
+            boolean success = currentEquation.tryGuessRoot(mathExpression);
+
+            if (success) {
+                player.getMessagesManager().sendMessage("CORRECT: " + currentEquation.getMathExpression() + " = 0; x = " + mathExpression + "!");
+                scoreManagers[currentTurnIndex].success();
+            } else {
+                player.getMessagesManager().sendMessage("INCORRECT: " + currentEquation.getMathExpression() + " != 0; x = " + mathExpression + "!");
+            }
+
+            nextTurn();
+            checkGameOver();
+        }
     }
 
     @Override
@@ -68,8 +99,20 @@ public class MathGame implements Game {
     }
 
     @Override
-    public void handleDisconnect(Worker client) {
+    public <W extends Worker> void handleDisconnect(W client) {
+        players.remove((ClientHandler) client);
 
+        if (players.size() < 2) {
+            roomManager.leaveRoom(players.getFirst(), true);
+            // game0ver = true
+        }
+
+        if (!isTurn().equals(client)) {
+            announceTurn();
+            return;
+        }
+
+        nextTurn();
     }
 
     @Override

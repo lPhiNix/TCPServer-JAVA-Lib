@@ -13,11 +13,30 @@ import org.phinix.lib.common.util.MessagesManager;
 import java.io.IOException;
 import java.net.Socket;
 
+// todo example does not finish
 /**
- * Abstract implementation of the {@link Worker} interface.
+ * {@code AbstractWorker} class is an abstract implementation of the {@link Worker} interface.
  * This class provides basic functionality for handling client communication.
  *
+ * <p>
+ * Use example:
+ * <pre>
+ *     public class ServerImpl extends AbstractServer {
+ *     public ServerImpl(int port, int maxUsers) {
+ *         super(
+ *
+ *         );
+ *     }
+ * }
+ * </pre>
+ *
  * @see Worker
+ * @see WorkerFactory
+ * @see MessagesManager
+ * @see AbstractServiceRegister
+ * @see Context
+ * @see AbstractTaskExecutor
+ * @see RoomImpl
  */
 public abstract class AbstractWorker implements Worker {
     private static final Logger logger = LogManager.getLogger();

@@ -7,10 +7,14 @@ import java.io.IOException;
 import java.net.Socket;
 
 /**
- * Factory interface for creating {@link Worker} instances.
+ * {@code WorkerFactory} interface is factory interface for creating {@link Worker} instances.
+ * <p>
+ * This interface implements {@code Factory Design Pattern}
+ *
+ * @see Worker
+ * @see AbstractWorker
  */
 public interface WorkerFactory {
-
     /**
      * Creates a new {@link Worker} instance.
      *

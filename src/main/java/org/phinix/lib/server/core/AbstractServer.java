@@ -19,10 +19,22 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+// todo example does not finish
 /**
- * Abstract implementation of the {@link Server} interface.
+ * {@code AbstractServer} class is an abstract implementation of the {@link Server} interface.
  * This class provides basic functionality for starting, stopping,
  * and managing client connections to the server.
+ * <p>
+ * Use example:
+ * <pre>
+ *     public class ServerImpl extends AbstractServer {
+ *     public ServerImpl(int port, int maxUsers) {
+ *         super(
+ *
+ *         );
+ *     }
+ * }
+ * </pre>
  *
  * @see Server
  * @see Manageable
@@ -76,6 +88,7 @@ public abstract class AbstractServer implements Server {
 
     /**
      * Constructs an AbstractServer with the specified parameters and an external server socket.
+     * (Construct for debug and do unit tests)
      *
      * @param port the port number on which the server listens
      * @param maxUsers the maximum number of concurrent users
@@ -106,6 +119,8 @@ public abstract class AbstractServer implements Server {
     /**
      * Starts the server and begins accepting client connections.
      * This method blocks until the server is stopped.
+     * <p>
+     * Method override from {@link Server} interface
      */
     @Override @SuppressWarnings("unchecked")
     public void start() {
@@ -154,6 +169,8 @@ public abstract class AbstractServer implements Server {
 
     /**
      * Stops the server and closes all client connections.
+     * <p>
+     * Method override from {@link Server} interface
      */
     @Override
     public void stop() {

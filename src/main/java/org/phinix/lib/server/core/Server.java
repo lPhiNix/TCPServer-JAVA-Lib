@@ -5,6 +5,7 @@ package org.phinix.lib.server.core;
  * This interface extends {@link Manageable} and provides methods to start and stop the server.
  *
  * @see Manageable
+ * @see AbstractServer
  */
 public interface Server extends Manageable {
 

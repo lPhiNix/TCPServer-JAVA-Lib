@@ -3,7 +3,7 @@ package org.phinix.lib.client;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.phinix.lib.common.util.MessagesManager;
+import org.phinix.lib.common.socket.MessagesManager;
 
 import java.io.IOException;
 import java.net.Socket;

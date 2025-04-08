@@ -2,7 +2,7 @@ package org.phinix.example.common.game.score;
 
 import org.phinix.example.common.model.Player;
 import org.phinix.example.server.service.services.PlayerManager;
-import org.phinix.lib.common.util.MessagesManager;
+import org.phinix.lib.common.socket.MessagesManager;
 
 public class ScoreManager {
     private final PlayerManager playerManager;

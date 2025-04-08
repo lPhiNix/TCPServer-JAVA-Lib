@@ -1,6 +1,6 @@
 package org.phinix.lib.common.model.room;
 
-import org.phinix.lib.common.util.MessagesManager;
+import org.phinix.lib.common.socket.MessagesManager;
 import org.phinix.lib.server.core.worker.Worker;
 import org.phinix.lib.server.session.Session;
 import org.phinix.lib.server.session.game.Game;

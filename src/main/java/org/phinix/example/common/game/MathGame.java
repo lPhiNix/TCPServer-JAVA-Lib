@@ -6,7 +6,7 @@ import org.phinix.example.server.core.thread.ClientHandler;
 import org.phinix.example.server.service.ServiceManager;
 import org.phinix.example.server.service.services.MathEquationPersistenceManager;
 import org.phinix.example.server.service.services.PlayerManager;
-import org.phinix.lib.common.util.MessagesManager;
+import org.phinix.lib.common.socket.MessagesManager;
 import org.phinix.lib.server.core.worker.Worker;
 import org.phinix.lib.server.service.services.RoomManager;
 import org.phinix.lib.server.session.game.Game;

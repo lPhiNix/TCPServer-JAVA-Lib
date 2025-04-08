@@ -4,7 +4,7 @@ import org.phinix.lib.common.model.room.RoomImpl;
 import org.phinix.lib.server.context.Context;
 import org.phinix.lib.server.core.Manageable;
 import org.phinix.lib.server.service.AbstractServiceRegister;
-import org.phinix.lib.common.util.MessagesManager;
+import org.phinix.lib.common.socket.MessagesManager;
 
 import java.io.IOException;
 

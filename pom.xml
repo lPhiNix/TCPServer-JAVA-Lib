@@ -15,7 +15,7 @@
     </properties>
 
     <dependencies>
-        <!-- implementation -->
+        <!-- game implementation -->
         <dependency>
             <groupId>net.objecthunter</groupId>
             <artifactId>exp4j</artifactId>

@@ -3,7 +3,6 @@ package org.phinix.lib.server.service.services;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.phinix.lib.common.model.room.RoomImpl;
 import org.phinix.lib.common.model.room.Room;
 import org.phinix.lib.server.core.worker.Worker;
 import org.phinix.lib.server.service.Service;
@@ -12,16 +11,19 @@ import java.lang.reflect.Constructor;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class RoomManager<R extends Room> implements Service {
+public class RoomManager<R extends Room, W extends Worker> implements Service {
     private static final Logger logger = LogManager.getLogger();
 
     private final Map<String, R> rooms;
+    private final Class<R> roomType;
+    private final Class<W> workerType;
 
-    public RoomManager() {
+    public RoomManager(Class<R> roomType, Class<W> workerType) {
+        this.roomType = roomType;
+        this.workerType = workerType;
         rooms = new ConcurrentHashMap<>();
     }
 
-    @SuppressWarnings("unchecked")
     public synchronized void createRoom(String roomName, Worker owner, int maxUsers) {
         if (rooms.containsKey(roomName)) {
             owner.getMessagesManager().sendMessage("This room already exists!");
@@ -29,8 +31,9 @@ public class RoomManager<R extends Room> implements Service {
         }
 
         try {
-            Constructor<? extends Room> constructor = RoomImpl.class.getConstructor(String.class, Worker.class, int.class);
-            R room = (R) constructor.newInstance(roomName, owner, maxUsers);
+            logger.log(Level.DEBUG, "Creating room with type: {}", roomType.getName());
+            Constructor<R> constructor = roomType.getConstructor(String.class, workerType, int.class);
+            R room = constructor.newInstance(roomName, owner, maxUsers);
 
             rooms.put(roomName, room);
 
@@ -40,6 +43,7 @@ public class RoomManager<R extends Room> implements Service {
             owner.getMessagesManager().sendMessage("Error creating room: " + roomName);
         }
     }
+
 
     public synchronized void joinRoom(String roomName, Worker client) {
         R room = rooms.get(roomName);

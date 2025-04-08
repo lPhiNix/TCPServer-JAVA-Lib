@@ -49,7 +49,7 @@ public class RoomCommand implements Command<ClientHandler> {
 
         logger.log(Level.DEBUG, "Executing command {} by {}", new Object[]{COMMAND_NAME, client.getClientAddress()});
 
-        RoomManager<MathGameRoom> roomManager = client.getServiceRegister().getService(RoomManager.class);
+        RoomManager<MathGameRoom, ClientHandler> roomManager = client.getServiceRegister().getService(RoomManager.class);
         String action = args[0];
 
         switch (action) {

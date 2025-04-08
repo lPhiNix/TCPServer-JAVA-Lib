@@ -4,18 +4,19 @@ import org.phinix.example.server.core.thread.ClientHandler;
 import org.phinix.lib.common.model.room.RoomImpl;
 
 public class MathGameRoom extends RoomImpl {
-    private static final int MAX_USERS = 2;
-
+    private final int maxPlayers;
     private MathGame session;
 
-    public MathGameRoom(String roomName, ClientHandler player) {
-        super(roomName, player, MAX_USERS);
+    public MathGameRoom(String roomName, ClientHandler player, int maxPlayers) {
+        super(roomName, player, maxPlayers);
+
+        this.maxPlayers = maxPlayers;
     }
 
     @Override
     public void startSession() {
        // session = new MathGame(clients, clients.get(0).get);
-
+        System.out.println("nose");
         try {
             session.start();
         } catch (Exception e) {
@@ -28,7 +29,7 @@ public class MathGameRoom extends RoomImpl {
         return session;
     }
 
-    public static int getMaxUsers() {
-        return MAX_USERS;
+    public int getMaxUsers() {
+        return maxPlayers;
     }
 }

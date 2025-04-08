@@ -46,7 +46,7 @@ public class TCPClient extends AbstractClient {
 
         try {
             while (isConnected) {
-                Thread.sleep(10);
+                Thread.sleep(50);
                 System.out.print(CYAN + "📝 > " + RESET);
                 commandLine = scanner.nextLine().trim();
 

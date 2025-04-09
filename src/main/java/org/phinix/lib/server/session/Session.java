@@ -11,6 +11,7 @@ import org.phinix.lib.common.model.room.RoomImpl;
 
 /**
  * {@code Session} interface represent a session that can be managed.
+ * <p>
  * This session is part of a {@link Room} in a {@link Server}.
  * A session in a server room is the purpose of that room. It can be start and
  * finish. When this session end, the session and the room end its live cycle.

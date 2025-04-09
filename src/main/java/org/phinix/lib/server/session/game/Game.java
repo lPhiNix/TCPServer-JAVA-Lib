@@ -7,6 +7,7 @@ import org.phinix.lib.common.model.room.Room;
 
 /**
  * {@code Game} interface representing a game session.
+ * <p>
  * This session type is for more specific implementation of a session
  * more oriented to implements game in a {@link Room}
  *

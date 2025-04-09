@@ -7,8 +7,13 @@ import java.io.IOException;
 import java.net.Socket;
 
 /**
- * {@code WorkerFactory} interface is factory interface for creating {@link Worker} instances.
- * This interface is used for create instance of a concrete Worker class (subclass) type.
+ * {@code WorkerFactory} interface provides a factory method for creating instances of
+ * {@link Worker}.
+ * <p>
+ * This interface is used for create instance of a concrete {@code Worker} class (subclass) type.
+ * <p>
+ * The purpose of this interface is to abstract the creation of service registries,
+ * enabling flexibility in their implementation.
  * <p>
  * This interface implements {@code Factory Design Pattern}
  *

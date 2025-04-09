@@ -7,14 +7,32 @@ import org.apache.logging.log4j.Logger;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * {@code AbstractServiceRegister} is an abstract base class that manages the registration and retrieval
- * of services within the server. Services are stored in a thread-safe {@link ConcurrentHashMap} to
- * ensure concurrent access is handled properly.
+ * {@code AbstractServiceRegister} abstract class is an abstract base class that manages the registration
+ * and retrieval of services within the server. Services are stored in a thread-safe
+ * {@link ConcurrentHashMap} to ensure concurrent access is handled properly.
  * <p>
  * This class provides a framework for registering services of type {@link Service} and retrieving
  * them by their class type. It also includes a mechanism to initialize services through the
  * {@link #initServices()} method, which must be implemented by subclasses.
+ * <p>
+ * Use example:
+ * <pre>{@code
+ * public class MyServiceManager extends AbstractServiceRegister {
+ *     @Override
+ *     protected int initServices() {
+ *         registerService(MyUserManager.class,
+ *              new MyUserManager());
+ *         registerService(CommandProcessor.class,
+ *              new CommandProcessor<>(new MyCommandFactory()));
+ *         registerService(RoomManager.class,
+ *              new RoomManager<>(MyRoom.class, MyWorker.class));
+ *         registerService(MyDataManager.class,
+ *              new MyDataManager());
  *
+ *         return getAmountRegisterService();
+ *     }
+ * }
+ * }
  * @see Service
  */
 public abstract class AbstractServiceRegister {

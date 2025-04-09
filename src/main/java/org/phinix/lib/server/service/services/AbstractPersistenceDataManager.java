@@ -3,7 +3,10 @@ package org.phinix.lib.server.service.services;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
 import org.phinix.lib.server.service.Service;
+import org.phinix.lib.server.core.AbstractServer;
+import org.phinix.lib.server.core.worker.AbstractWorker;
 
 import java.io.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -17,8 +20,27 @@ import java.util.concurrent.ConcurrentHashMap;
  * This class includes methods for validating data lines, parsing data from the file into
  * memory, and retrieving specific lines of data. Subclasses are responsible for defining
  * what constitutes valid data by implementing the {@link #isValidDataLine(String)} method.
+ * <p>
+ * Use example:
+ * <pre>{@code
+ * public class DataManager extends AbstractPersistenceDataManager {
+ *
+ *     private static final String FILE_PATH = "data.txt";
+ *
+ *     public DataManager() {
+ *         super(FILE_PATH);
+ *     }
+ *
+ *     @Override
+ *     protected boolean isValidDataLine(String line) {
+ *         return true;
+ *     }
+ * }
+ * }
  *
  * @see Service
+ * @see AbstractServer
+ * @see AbstractWorker
  */
 public abstract class AbstractPersistenceDataManager implements Service {
     private static final Logger logger = LogManager.getLogger();

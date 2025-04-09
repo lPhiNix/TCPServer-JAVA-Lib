@@ -32,7 +32,7 @@ import java.util.concurrent.ConcurrentHashMap;
  *         return getAmountRegisterService();
  *     }
  * }
- * }
+ * }</pre>
  * @see Service
  */
 public abstract class AbstractServiceRegister {
@@ -46,14 +46,14 @@ public abstract class AbstractServiceRegister {
      * register their specific services.
      */
     public AbstractServiceRegister() {
-        logger.log(Level.DEBUG, "Initializing");
+        logger.log(Level.DEBUG, "Initializing service register...");
 
         // Initialize an empty service registry.
         services = new ConcurrentHashMap<>();
 
         // Call the subclass-specific service initialization method.
         int amountRegisteredService = initServices();
-        logger.log(Level.INFO, "{} service(s) registered in server", amountRegisteredService);
+        logger.log(Level.INFO, "{} service(s) successfully registered in the server", amountRegisteredService);
     }
 
     /**
@@ -71,7 +71,9 @@ public abstract class AbstractServiceRegister {
      * @param service the service instance to register
      */
     protected void registerService(Class<? extends Service> classService, Service service) {
+        // Register the service by its class type
         services.put(classService, service);
+        logger.log(Level.DEBUG, "Service registered: {}", classService.getSimpleName());
     }
 
     /**
@@ -85,12 +87,15 @@ public abstract class AbstractServiceRegister {
     public synchronized <S extends Service> S getService(Class<S> classService) {
         S service = classService.cast(services.get(classService));
 
+        // If the service is not registered, log an error
         if (service == null) {
             logger.log(Level.ERROR, "{} service is not registered and is not running in the server",
                     classService.getSimpleName());
             return null;
         }
 
+        // Return the service if found
+        logger.log(Level.DEBUG, "Service retrieved: {}", classService.getSimpleName());
         return service;
     }
 
@@ -100,6 +105,8 @@ public abstract class AbstractServiceRegister {
      * @return the number of registered services
      */
     protected int getAmountRegisterService() {
-        return services.size();
+        int amount = services.size();
+        logger.log(Level.DEBUG, "Total services registered: {}", amount);
+        return amount;
     }
 }

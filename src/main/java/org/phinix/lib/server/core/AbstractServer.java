@@ -92,17 +92,17 @@ public abstract class AbstractServer implements Server {
         this.contextFactory = contextFactory;
         this.asyncGlobalTaskExecutor = taskExecutor;
 
-        this.serviceRegister = serviceRegisterWorker.createServiceRegister(); // Instancing new ServiceRegister
+        this.serviceRegister = serviceRegisterWorker.createServiceRegister(); // Instantiating new ServiceRegister
 
         threadPool = Executors.newFixedThreadPool(maxUsers); // ThreadPool with client limit
-        connectedClients = new CopyOnWriteArrayList<>();
+        connectedClients = new CopyOnWriteArrayList<>(); // Initialize the list of connected clients
 
-        isRunning = false; // initializing running in false
+        isRunning = false; // initializing running as false
     }
 
     /**
      * Constructs an AbstractServer with the specified parameters and an external server socket.
-     * (Construct for debug and do unit tests)
+     * (Constructor for debugging and unit tests)
      *
      * @param port the port number on which the server listens
      * @param maxUsers the maximum number of concurrent users
@@ -126,12 +126,12 @@ public abstract class AbstractServer implements Server {
         this.asyncGlobalTaskExecutor = taskExecutor;
         this.serverSocket = serverSocket;
 
-        this.serviceRegister = serviceRegisterWorker.createServiceRegister(); // Instancing new ServiceRegister
+        this.serviceRegister = serviceRegisterWorker.createServiceRegister(); // Instantiating new ServiceRegister
 
         threadPool = Executors.newFixedThreadPool(maxUsers); // ThreadPool with client limit
-        connectedClients = new CopyOnWriteArrayList<>();
+        connectedClients = new CopyOnWriteArrayList<>(); // Initialize the list of connected clients
 
-        isRunning = false; // initializing running in false
+        isRunning = false; // initializing running as false
     }
 
     /**
@@ -143,29 +143,30 @@ public abstract class AbstractServer implements Server {
     @Override @SuppressWarnings("unchecked")
     public void start() {
         try {
-            serverSocket = new ServerSocket(port);
+            serverSocket = new ServerSocket(port); // Create a new ServerSocket to listen on the specified port
             logger.log(Level.INFO, "Initializing server on port: {}", port);
 
-            isRunning = true;
+            isRunning = true; // Set the server running flag to true
 
-            asyncGlobalTaskExecutor.start(this);
+            asyncGlobalTaskExecutor.start(this); // Start the asynchronous global task executor
 
             while (isRunning) {
+                // Check if the maximum number of users is reached
                 if (Thread.activeCount() > maxUsers) {
                     logger.log(Level.WARN, "Max users amount reached: {}. Waiting to accept new connections", maxUsers);
-                    continue;
+                    continue; // Skip accepting new connections if the limit is reached
                 }
 
-                Socket clientSocket = serverSocket.accept();
+                Socket clientSocket = serverSocket.accept(); // Accept a new client connection
                 logger.log(Level.INFO, "New connection accepted from: {}", clientSocket.getInetAddress());
 
-                threadPool.submit(createNewClientWorker(clientSocket));
+                threadPool.submit(createNewClientWorker(clientSocket)); // Submit the new client worker to the thread pool
             }
         } catch (IOException e) {
-            logger.log(Level.FATAL, "Error initializing server: ", e);
+            logger.log(Level.FATAL, "Error initializing server: ", e); // Log the error if the server fails to initialize
         } finally {
             logger.log(Level.INFO, "Closing server...");
-            stop();
+            stop(); // Stop the server in the finally block to ensure it always gets executed
         }
     }
 
@@ -177,12 +178,12 @@ public abstract class AbstractServer implements Server {
      * @throws IOException if an I/O error occurs
      */
     private Worker createNewClientWorker(Socket clientSocket) throws IOException {
-        Context context = contextFactory.createServerContext(this);
-        Worker client = workerFactory.createWorker(clientSocket, context, serviceRegister);
+        Context context = contextFactory.createServerContext(this); // Create a new context for the server
+        Worker client = workerFactory.createWorker(clientSocket, context, serviceRegister); // Create a new worker for the client
 
-        addClient(client);
+        addClient(client); // Add the new client to the connected clients list
 
-        return client;
+        return client; // Return the newly created client worker
     }
 
     /**
@@ -192,17 +193,17 @@ public abstract class AbstractServer implements Server {
      */
     @Override
     public void stop() {
-        isRunning = false;
-        asyncGlobalTaskExecutor.stop();
+        isRunning = false; // Set the server running flag to false
+        asyncGlobalTaskExecutor.stop(); // Stop the asynchronous global task executor
         try {
             if (serverSocket != null && !serverSocket.isClosed()) {
-                serverSocket.close();
+                serverSocket.close(); // Close the server socket if it's not already closed
                 logger.log(Level.INFO, "Server stopped.");
             }
         } catch (IOException e) {
-            logger.log(Level.ERROR, "Error closing server: ", e);
+            logger.log(Level.ERROR, "Error closing server: ", e); // Log an error if there's an issue closing the server
         }
-        threadPool.shutdown();
+        threadPool.shutdown(); // Shutdown the thread pool to clean up resources
     }
 
     /**
@@ -213,10 +214,10 @@ public abstract class AbstractServer implements Server {
      */
     public final boolean addClient(Worker worker) {
         if (connectedClients.isEmpty()) {
-            return false;
+            return false; // Return false if the connected clients list is empty
         }
 
-        return connectedClients.add(worker);
+        return connectedClients.add(worker); // Add the client worker to the connected clients list
     }
 
     /**
@@ -227,10 +228,10 @@ public abstract class AbstractServer implements Server {
      */
     public final boolean removeClient(Worker worker) {
         if (connectedClients.size() >= maxUsers) {
-            return false;
+            return false; // Return false if the number of connected clients is at the maximum limit
         }
 
-        return connectedClients.remove(worker);
+        return connectedClients.remove(worker); // Remove the client worker from the connected clients list
     }
 
     /**
@@ -240,10 +241,10 @@ public abstract class AbstractServer implements Server {
      */
     public final List<Worker> getConnectedClients() {
         if (connectedClients.isEmpty()) {
-            return null;
+            return null; // Return null if no clients are connected
         }
 
-        return List.copyOf(connectedClients);
+        return List.copyOf(connectedClients); // Return an unmodifiable copy of the connected clients list
     }
 
     /**
@@ -252,7 +253,7 @@ public abstract class AbstractServer implements Server {
      * @return the global asynchronous task executor
      */
     public AbstractTaskExecutor getAsyncGlobalTaskExecutor() {
-        return asyncGlobalTaskExecutor;
+        return asyncGlobalTaskExecutor; // Return the global asynchronous task executor
     }
 
     /**
@@ -261,7 +262,7 @@ public abstract class AbstractServer implements Server {
      * @return the port number
      */
     public final int getPort() {
-        return port;
+        return port; // Return the port number
     }
 
     /**
@@ -270,6 +271,6 @@ public abstract class AbstractServer implements Server {
      * @return the maximum number of concurrent users
      */
     public final int getMaxUsers() {
-        return maxUsers;
+        return maxUsers; // Return the maximum number of concurrent users
     }
 }

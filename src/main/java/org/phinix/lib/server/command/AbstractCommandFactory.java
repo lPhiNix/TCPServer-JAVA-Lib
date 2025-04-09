@@ -44,18 +44,20 @@ public abstract class AbstractCommandFactory<W extends Worker> {
 
     /**
      * Constructs an AbstractCommandFactory and initializes the commands.
+     * Logs the initialization of the factory and the number of registered commands.
      */
     public AbstractCommandFactory() {
-        logger.log(Level.DEBUG, "Initializing");
+        logger.log(Level.DEBUG, "Initializing AbstractCommandFactory");
 
         this.commands = new HashMap<>();
 
-        int amountRegisteredCommands = initCommands();
-        logger.log(Level.INFO, "{} registered commands in server", amountRegisteredCommands);
+        int amountRegisteredCommands = initCommands(); // Calls the abstract method to initialize the commands
+        logger.log(Level.INFO, "{} registered commands in server", amountRegisteredCommands); // Logs the total number of registered commands
     }
 
     /**
      * Initializes the commands.
+     * This method must be implemented by subclasses to register their specific commands.
      *
      * @return the number of registered commands
      */
@@ -63,48 +65,53 @@ public abstract class AbstractCommandFactory<W extends Worker> {
 
     /**
      * Registers a command with the specified name and class.
+     * Adds the command name and its associated class to the commands map.
      *
      * @param commandName the name of the command
      * @param commandClass the class of the command
      */
     protected void registerCommand(String commandName, Class<? extends Command<W>> commandClass) {
-        commands.put(commandName, commandClass);
-        logger.log(Level.DEBUG, "Command registered: {}", commandName);
+        commands.put(commandName, commandClass); // Adds the command to the map
+        logger.log(Level.DEBUG, "Command registered: {}", commandName); // Logs the registration of the command
     }
 
     /**
      * Returns the class of the command with the specified name.
+     * This method is used to retrieve the command's class type from the map.
      *
      * @param commandName the name of the command
      * @return the class of the command, or {@code null} if not found
      */
     public Class<? extends Command<W>> getCommandType(String commandName) {
-        return commands.get(commandName);
+        return commands.get(commandName); // Retrieves the command class from the map
     }
 
     /**
      * Creates a new instance of the command with the specified name.
+     * This method uses reflection to instantiate the command class.
      *
      * @param commandName the name of the command
      * @return the created command, or {@code null} if not found
      * @throws Exception if an error occurs while creating the command
      */
     public Command<W> createCommand(String commandName) throws Exception {
-        logger.log(Level.DEBUG, "Building {}...", commandName);
-        Class<? extends Command<W>> commandClass = getCommandType(commandName);
+        logger.log(Level.DEBUG, "Building command: {}", commandName); // Logs the creation attempt
+        Class<? extends Command<W>> commandClass = getCommandType(commandName); // Fetches the command class
+
         if (commandClass != null) {
-            return commandClass.getConstructor().newInstance();
+            return commandClass.getConstructor().newInstance(); // Creates and returns a new instance of the command
         }
 
-        return null;
+        return null; // Returns null if the command class was not found
     }
 
     /**
      * Returns the number of registered commands.
+     * This method provides the total count of commands that have been registered.
      *
      * @return the number of registered commands
      */
     protected int getAmountRegisteredCommands() {
-        return commands.size();
+        return commands.size(); // Returns the size of the map, i.e., the number of registered commands
     }
 }

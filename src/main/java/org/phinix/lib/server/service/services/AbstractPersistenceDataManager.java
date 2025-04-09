@@ -126,7 +126,7 @@ public abstract class AbstractPersistenceDataManager implements Service {
      */
     private void checkDataFile(File dataFile) {
         if (!dataFile.exists()) {
-            logger.log(Level.FATAL, "{} data file does not exist: ", filePath);
+            logger.log(Level.FATAL, "Data file does not exist: {}", filePath); // Improved log message format
             throw new RuntimeException("Data file does not exist.");
         }
         logger.log(Level.DEBUG, "Data file exists: {}", filePath);
@@ -139,6 +139,7 @@ public abstract class AbstractPersistenceDataManager implements Service {
      * @return the data line at the specified index, or {@code null} if the index is invalid
      */
     protected String getDataLine(int index) {
+        logger.log(Level.DEBUG, "Retrieving data line at index: {}", index);
         return data.get(index);
     }
 
@@ -148,6 +149,7 @@ public abstract class AbstractPersistenceDataManager implements Service {
      * @return the number of data lines
      */
     public int getEquationAmount() {
+        logger.log(Level.DEBUG, "Fetching total number of data lines: {}", data.size());
         return data.size();
     }
 
@@ -157,6 +159,7 @@ public abstract class AbstractPersistenceDataManager implements Service {
      * the latest content from the file.
      */
     protected void reloadData() {
+        logger.log(Level.DEBUG, "Reloading data from file: {}", filePath);
         data = loadData();
     }
 }

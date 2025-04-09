@@ -69,7 +69,7 @@ public abstract class AbstractWorker implements Worker {
                           Context serverContext,
                           AbstractServiceRegister serviceRegister,
                           AbstractTaskExecutor taskExecutor) throws IOException {
-        logger.log(Level.DEBUG, "Initializing");
+        logger.log(Level.DEBUG, "Initializing worker for client at: {}", socket.getInetAddress());
 
         this.socket = socket;
         this.messagesManager = new MessagesManager(socket);
@@ -77,34 +77,34 @@ public abstract class AbstractWorker implements Worker {
         this.serverContext = serverContext;
         this.asyncClientTaskExecutor = taskExecutor;
 
-        isRunning = true; // initializing running in true
+        isRunning = true; // Initializing worker as running
     }
 
     /**
      * Method {@code run()} from {@link Runnable} that will be executed when
-     * this thread start its live cycle.
+     * this thread starts its lifecycle.
      */
     @Override
     @SuppressWarnings("unchecked")
     public void run() {
         try {
-            logger.log(Level.INFO, "Listening client {}", socket.getInetAddress());
+            logger.log(Level.INFO, "Listening to client at: {}", socket.getInetAddress());
 
             // Start Async Worker Task
             asyncClientTaskExecutor.start(this);
 
             while (isRunning) {
-                if (!listenLoop()) { // Listening always while worker is running
+                if (!listenLoop()) { // Listening loop continues while worker is running
                     break;
                 }
             }
         } catch (IOException e) {
-            logger.log(Level.FATAL, "Error connecting to client: ", e);
+            logger.log(Level.FATAL, "Error connecting to client at {}: ", socket.getInetAddress(), e);
         } catch (Exception e) {
-            logger.log(Level.FATAL, "Error managing client input: ", e);
+            logger.log(Level.FATAL, "Error processing client input at {}: ", socket.getInetAddress(), e);
         } finally {
-            logger.log(Level.INFO, "Stopping worker {}...", socket.getInetAddress());
-            closeConnection(); // Closing connection in end of thread live cycle
+            logger.log(Level.INFO, "Stopping worker for client at: {}", socket.getInetAddress());
+            closeConnection(); // Closing connection at the end of the worker's lifecycle
         }
     }
 
@@ -117,18 +117,18 @@ public abstract class AbstractWorker implements Worker {
     protected boolean listenLoop() throws IOException {
         String line;
         if ((line = messagesManager.receiveMessage()) != null) {
-            listen(line); // Listening
+            listen(line); // Process received message
             return true;
         }
 
-        return false; // If message is null, the connection with clients has ended.
+        return false; // Connection has ended if no message is received
     }
 
     /**
      * Listens for a message from the client.
      * This method should be implemented by subclasses to handle client messages.
      * <p>
-     * In subclass will use this method to handle client message that iy receive
+     * In subclass, this method will be used to process client messages.
      *
      * @param line the message received from the client
      * @throws IOException if an I/O error occurs
@@ -143,7 +143,7 @@ public abstract class AbstractWorker implements Worker {
      */
     @Override
     public MessagesManager getMessagesManager() {
-        return messagesManager;
+        return messagesManager; // Return the message manager
     }
 
     /**
@@ -153,7 +153,7 @@ public abstract class AbstractWorker implements Worker {
      */
     @Override
     public AbstractServiceRegister getServiceRegister() {
-        return serviceRegister;
+        return serviceRegister; // Return the service register
     }
 
     /**
@@ -163,7 +163,7 @@ public abstract class AbstractWorker implements Worker {
      */
     @Override
     public Context getServerContext() {
-        return serverContext;
+        return serverContext; // Return the server context
     }
 
     /**
@@ -173,7 +173,7 @@ public abstract class AbstractWorker implements Worker {
      */
     @Override
     public RoomImpl getCurrentRoom() {
-        return currentRoomImpl;
+        return currentRoomImpl; // Return the current room the worker is in
     }
 
     /**
@@ -183,7 +183,7 @@ public abstract class AbstractWorker implements Worker {
      */
     @Override
     public void setCurrentRoom(RoomImpl roomImpl) {
-        this.currentRoomImpl = roomImpl;
+        this.currentRoomImpl = roomImpl; // Set the current room for the worker
     }
 
     /**
@@ -193,7 +193,7 @@ public abstract class AbstractWorker implements Worker {
      */
     @Override
     public String getClientAddress() {
-        return socket.getInetAddress().getHostAddress();
+        return socket.getInetAddress().getHostAddress(); // Get the client's address from the socket
     }
 
     /**
@@ -202,7 +202,7 @@ public abstract class AbstractWorker implements Worker {
      * @return the client socket
      */
     public Socket getSocket() {
-        return socket;
+        return socket; // Return the client socket
     }
 
     /**
@@ -210,15 +210,15 @@ public abstract class AbstractWorker implements Worker {
      */
     @Override
     public void closeConnection() {
-        isRunning = false;
-        asyncClientTaskExecutor.stop();
+        isRunning = false; // Set worker as stopped
+        asyncClientTaskExecutor.stop(); // Stop the async client task executor
         try {
             if (socket != null && !socket.isClosed()) {
-                socket.close();
-                logger.log(Level.INFO, "Worker stopped.");
+                socket.close(); // Close the client socket if it is not already closed
+                logger.log(Level.INFO, "Worker stopped for client at: {}", socket.getInetAddress());
             }
         } catch (IOException e) {
-            logger.log(Level.ERROR, "Error closing worker: ", e);
+            logger.log(Level.ERROR, "Error closing connection for client at {}: ", socket.getInetAddress(), e);
         }
     }
 }

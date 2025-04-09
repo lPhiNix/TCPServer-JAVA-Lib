@@ -35,7 +35,7 @@ public class CommandProcessor<W extends Worker> implements Service {
      * @param commandFactory the factory used to create command instances
      */
     public CommandProcessor(AbstractCommandFactory<W> commandFactory) {
-        logger.log(Level.DEBUG, "Initializing");
+        logger.log(Level.DEBUG, "Initializing CommandProcessor");
 
         this.commandFactory = commandFactory;
     }
@@ -55,8 +55,9 @@ public class CommandProcessor<W extends Worker> implements Service {
             // Split the command line into individual components (command name and arguments).
             String[] formatLine = formatLine(line);
             if (!isValidFormatLine(formatLine)) {
+                // Log and notify if the command format is invalid
                 worker.getMessagesManager().sendMessageAndLog(Level.WARN,
-                        "Command line hasn't valid format: {}", line);
+                        "Command line has invalid format: {}", line);
                 return false;
             }
 
@@ -64,12 +65,12 @@ public class CommandProcessor<W extends Worker> implements Service {
             String commandName = formatLine[0];
             String[] args = getCommandParameters(formatLine);
 
-            logger.log(Level.DEBUG, "Trying to build command: {}", commandName);
+            logger.log(Level.DEBUG, "Attempting to build command: {}", commandName);
             return buildAndExecuteCommand(commandName, args, worker);
         } catch (Exception e) {
             // Handle any exceptions that occur during command processing.
             logger.log(Level.ERROR, "Error processing command: {}. Exception: ", line, e);
-            return true;
+            return false;
         }
     }
 
@@ -91,10 +92,10 @@ public class CommandProcessor<W extends Worker> implements Service {
      */
     private boolean isValidFormatLine(String[] formatLine) {
         if (formatLine.length == 0) {
-            logger.log(Level.WARN, "Command line is unknown");
+            // Log and notify if the command line is empty or unknown
+            logger.log(Level.WARN, "Command line is unknown or empty");
             return false;
         }
-
         return true;
     }
 
@@ -111,12 +112,15 @@ public class CommandProcessor<W extends Worker> implements Service {
             throws Exception {
         Command<W> userCommand = commandFactory.createCommand(commandName);
         if (userCommand != null) {
+            // Log successful execution of the command
             logger.log(Level.INFO, "Command executed successfully: {}",
                     userCommand.getClass().getSimpleName());
             userCommand.execute(commandParameters, worker);
             return true;
         }
 
+        // Log if the command could not be built or was invalid
+        logger.log(Level.DEBUG, "Failed to build or execute command: {}", commandName);
         return false;
     }
 
@@ -128,6 +132,7 @@ public class CommandProcessor<W extends Worker> implements Service {
      */
     private static String[] getCommandParameters(String[] array) {
         if (array.length <= 1) {
+            // Return an empty array if no parameters are provided
             return new String[0];
         }
         return Arrays.copyOfRange(array, 1, array.length);

@@ -54,9 +54,11 @@ public class RoomManager<R extends Room, W extends Worker> implements Service {
      * @param rounds   the number of rounds (used in games)
      */
     public synchronized void createRoom(String roomName, Worker owner, int maxUsers, int rounds) {
+        // Check if the room already exists
         if (rooms.containsKey(roomName)) {
             // Notify the owner if the room already exists
             owner.getMessagesManager().sendMessage("This room already exists!");
+            logger.log(Level.DEBUG, "Room '{}' already exists, creation aborted.", roomName);
             return;
         }
 
@@ -68,10 +70,12 @@ public class RoomManager<R extends Room, W extends Worker> implements Service {
 
             // Add the room to the collection
             rooms.put(roomName, room);
+            logger.log(Level.INFO, "Room '{}' created successfully", roomName);
 
             // Notify the owner of successful room creation
             owner.getMessagesManager().sendMessage("Room " + roomName + " created successfully!");
         } catch (Exception e) {
+            // Log any errors during room creation
             logger.log(Level.ERROR, "Error creating room: {}", roomName, e);
             owner.getMessagesManager().sendMessage("Error creating room: " + roomName);
         }
@@ -89,10 +93,12 @@ public class RoomManager<R extends Room, W extends Worker> implements Service {
         if (room == null) {
             // Notify the client if the room does not exist
             client.getMessagesManager().sendMessage("Room " + roomName + " does not exist!");
+            logger.log(Level.DEBUG, "Room '{}' does not exist, join attempt failed.", roomName);
             return;
         }
         // Add the client to the room
         room.addClient(client);
+        logger.log(Level.DEBUG, "{} has joined the room '{}'.", client.getClientAddress(), roomName);
     }
 
     /**
@@ -107,7 +113,8 @@ public class RoomManager<R extends Room, W extends Worker> implements Service {
         R room = (R) client.getCurrentRoom();
 
         if (room == null) {
-            return; // The worker is not in any room
+            // If the worker is not in any room, do nothing
+            return;
         }
 
         logger.log(Level.INFO, "{} has left the room {}", client.getClientAddress(), room.getRoomName());
@@ -127,6 +134,7 @@ public class RoomManager<R extends Room, W extends Worker> implements Service {
         // Remove the client and terminate the session
         room.removeClient(client, true);
         rooms.remove(room.getRoomName());
+        logger.log(Level.DEBUG, "Room '{}' has ended, session terminated.", room.getRoomName());
     }
 
     /**
@@ -139,11 +147,13 @@ public class RoomManager<R extends Room, W extends Worker> implements Service {
         if (rooms.isEmpty()) {
             // Notify the client if no rooms are active
             client.getMessagesManager().sendMessage("There are no active rooms.");
+            logger.log(Level.DEBUG, "No active rooms available to display.");
             return;
         }
 
         // Send the list of active rooms to the client
         client.getMessagesManager().sendMessage("Active Rooms: ");
+        logger.log(Level.DEBUG, "Sending list of active rooms to {}", client.getClientAddress());
         for (String roomName : rooms.keySet()) {
             client.getMessagesManager().sendMessage(
                     "Name: " + roomName + ", Users: " + rooms.get(roomName).getClientsAmount()

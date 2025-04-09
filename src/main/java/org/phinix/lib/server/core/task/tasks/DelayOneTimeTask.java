@@ -10,7 +10,7 @@ import org.phinix.lib.server.core.task.Task;
 /**
  * Abstract class representing a task that executes once with delays before and after processing.
  * <p>
- * This class extends from {@link Task} and it can be executed by {@link AbstractTaskExecutor}.
+ * This class extends from {@link Task} and can be executed by {@link AbstractTaskExecutor}.
  * <p>
  * This class provides an implementation of the {@link #executeAsync(M)} method, which handles the execution of the
  * task with a delay before and after the actual work is done. The {@link #process(M)} method is still abstract and
@@ -33,8 +33,8 @@ public abstract class DelayOneTimeTask<M extends Manageable> extends Task<M> {
      * @param afterMillis the delay after task execution in milliseconds
      */
     public DelayOneTimeTask(int beginMillis, int afterMillis) {
-        this.beginMillis = beginMillis;
-        this.afterMillis = afterMillis;
+        this.beginMillis = beginMillis; // Set delay before task execution
+        this.afterMillis = afterMillis; // Set delay after task execution
     }
 
     /**
@@ -44,10 +44,10 @@ public abstract class DelayOneTimeTask<M extends Manageable> extends Task<M> {
      */
     @Override
     protected void executeAsync(M manageable) {
-        delay(beginMillis);
-        logger.log(Level.DEBUG, "Task delayed before execution: {} ms", beginMillis);
-        process(manageable);
-        delay(afterMillis);
-        logger.log(Level.DEBUG, "Task delayed after execution: {} ms", afterMillis);
+        delay(beginMillis); // Wait for the initial delay before executing the task
+        logger.log(Level.DEBUG, "Task delayed before execution: {} ms", beginMillis); // Log the delay before execution
+        process(manageable); // Execute the task's work
+        delay(afterMillis); // Wait for the delay after executing the task
+        logger.log(Level.DEBUG, "Task delayed after execution: {} ms", afterMillis); // Log the delay after execution
     }
 }

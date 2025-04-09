@@ -18,8 +18,30 @@ import java.util.function.Function;
  * authenticating them, updating user details, and persisting user data to a file.
  * <p>
  * The class uses a {@link ConcurrentHashMap} to store user data, ensuring thread-safe
- * operations in a multi-threaded environment. It also supports dynamic field type casting
+ * operations in a multithreaded environment. It also supports dynamic field type casting
  * for user attributes via a customizable casting map.
+ * <p>
+ * Use example:
+ * <pre>{@code
+ * public class MyUserManager extends AbstractUserManager<MyUser> {
+ *
+ *     private static final String FILE_NAME = "users.txt";
+ *
+ *     @Override
+ *     protected void initCastFieldType() {
+ *         registerFieldType(int.class, Integer::parseInt);
+ *         registerFieldType(long.class, Long::parseLong);
+ *         registerFieldType(double.class, Double::parseDouble);
+ *         registerFieldType(float.class, Float::parseFloat);
+ *         registerFieldType(boolean.class, Boolean::parseBoolean);
+ *         registerFieldType(String.class, String::valueOf);
+ *     }
+ *
+ *     public MyUserManager() {
+ *         super(MyUser.class, FILE_NAME);
+ *     }
+ * }
+ * }
  *
  * @param <U> the type of user being managed, extending {@link User}
  * @see User
@@ -52,6 +74,7 @@ public abstract class AbstractUserManager<U extends User> implements Service {
         // Ensure the file exists or create a new one
         if (!FileUtil.fileExists(filePath)) {
             FileUtil.createFile(filePath);
+            logger.log(Level.DEBUG, "Created new file at: {}", filePath); // Log creation of new file
         }
 
         // Load users from the file
@@ -104,10 +127,12 @@ public abstract class AbstractUserManager<U extends User> implements Service {
     public boolean registerUser(U user) {
         logger.log(Level.DEBUG, "Registering user: {}", user.getUsername());
         if (isUserAlreadyRegistered(user)) {
+            logger.log(Level.INFO, "User '{}' is already registered", user.getUsername()); // Log if user is already registered
             return false;
         }
         users.put(user.getUsername(), user);
         saveUsersToFile(); // Persist the new user data to the file
+        logger.log(Level.INFO, "User '{}' registered successfully", user.getUsername()); // Log successful registration
         return true;
     }
 
@@ -131,7 +156,12 @@ public abstract class AbstractUserManager<U extends User> implements Service {
     public U authenticate(String username, String password) {
         logger.log(Level.DEBUG, "Authenticating user: {}", username);
         U user = users.get(username);
-        return isAuthenticated(user, password) ? user : null;
+        if (isAuthenticated(user, password)) {
+            logger.log(Level.INFO, "User '{}' authenticated successfully", username); // Log successful authentication
+            return user;
+        }
+        logger.log(Level.INFO, "Authentication failed for user '{}'", username); // Log authentication failure
+        return null;
     }
 
     /**
@@ -154,6 +184,7 @@ public abstract class AbstractUserManager<U extends User> implements Service {
         logger.log(Level.DEBUG, "Updating user: {}", newUser.getUsername());
         users.put(newUser.getUsername(), newUser);
         saveUsersToFile(); // Persist the updated user data to the file
+        logger.log(Level.INFO, "User '{}' updated successfully", newUser.getUsername()); // Log successful update
     }
 
     /**
@@ -270,47 +301,45 @@ public abstract class AbstractUserManager<U extends User> implements Service {
         try {
             appendFieldsToStringBuilder(user, fields, stringBuilder);
         } catch (IllegalAccessException e) {
-            logger.log(Level.ERROR, "Error converting user to string: ", e);
+            logger.log(Level.ERROR, "Error converting user fields to string: ", e);
         }
 
         return stringBuilder.toString();
     }
 
     /**
-     * Appends field values of a user object to a string builder.
+     * Appends the field values of a user object to a StringBuilder.
      *
      * @param user          the user object
      * @param fields        the fields of the user
-     * @param stringBuilder the string builder to append to
+     * @param stringBuilder the StringBuilder to append to
      * @throws IllegalAccessException if a field is inaccessible
      */
     private void appendFieldsToStringBuilder(U user, Field[] fields, StringBuilder stringBuilder) throws IllegalAccessException {
         for (Field field : fields) {
             field.setAccessible(true);
             Object value = field.get(user);
-            logger.log(Level.DEBUG, "Field: {} - Value: {}", field.getName(), value);
-            stringBuilder.append(value).append(",");
+            if (value != null) {
+                stringBuilder.append(value.toString()).append(",");
+            } else {
+                logger.log(Level.WARN, "Null value found for field {}", field.getName());
+            }
         }
-
-        if (!stringBuilder.isEmpty()) {
-            stringBuilder.setLength(stringBuilder.length() - 1); // Remove trailing comma
-        }
-        logger.log(Level.DEBUG, "Final string representation of the user: {}", stringBuilder);
+        stringBuilder.setLength(stringBuilder.length() - 1); // Remove the last comma
     }
 
     /**
-     * Retrieves all fields of a class, including inherited fields.
+     * Retrieves all declared fields of the given user class, including those from superclasses.
      *
-     * @param clazz the class to retrieve fields from
-     * @return an array of fields
+     * @param clazz the class of the user
+     * @return an array of fields declared in the class
      */
     private Field[] getAllFields(Class<?> clazz) {
-        List<Field> allFields = new ArrayList<>();
+        List<Field> fields = new ArrayList<>();
         while (clazz != null) {
-            Field[] declaredFields = clazz.getDeclaredFields();
-            allFields.addAll(Arrays.asList(declaredFields));
+            fields.addAll(Arrays.asList(clazz.getDeclaredFields()));
             clazz = clazz.getSuperclass();
         }
-        return allFields.toArray(new Field[0]);
+        return fields.toArray(new Field[0]);
     }
 }

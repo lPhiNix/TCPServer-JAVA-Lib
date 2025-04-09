@@ -5,47 +5,38 @@
         <!-- Define a file name pattern based on the current date -->
         <property name="filePattern">%d{yyyy-MM-dd}</property>
     </Properties>
-
     <!-- Appenders section, where destinations for logs are defined -->
     <Appenders>
-
         <!-- Console: A destination for logs to be displayed in the console -->
         <Console name="Console" target="SYSTEM_OUT">
             <!-- PatternLayout defines the log format in the console with color coding based on log level -->
             <!-- [HH:MM:SS.ml] [currentThreadName] <com.package.CurrentClassName> [LEVEL]: Log message -->
             <PatternLayout pattern="%highlight{[%d{HH:mm:ss.SSS}] [%thread] &lt;%logger{36}&gt; [%level]: %msg%n%throwable}{
-                FATAL=red blink,  <!-- Color for FATAL level logs -->
-                ERROR=red,        <!-- Color for ERROR level logs -->
-                WARN=yellow,      <!-- Color for WARN level logs -->
-                INFO=green,       <!-- Color for INFO level logs -->
-                DEBUG=cyan,       <!-- Color for DEBUG level logs -->
-                TRACE=magenta     <!-- Color for TRACE level logs -->
-            }" disableAnsi="false" /> <!-- Setting to not disable ANSI colors -->
+                FATAL=red blink,
+                ERROR=red,
+                WARN=yellow,
+                INFO=green,
+                DEBUG=cyan,
+                TRACE=magenta
+            }" disableAnsi="false" />  <!-- Setting to not disable ANSI colors -->
         </Console>
-
         <!-- RollingFile: A destination for logs that are saved to files and rotated -->
         <RollingFile name="RollingFile" filePattern="logs/LOG-${filePattern}.txt">
-            <!-- PatternLayout defines the log format in the log files -->
             <PatternLayout pattern="[%d{HH:mm:ss.SSS}] &lt;%logger{36}&gt; [%level]: %msg%n%throwable" />
-
-            <!-- File rotation policies -->
             <Policies>
                 <!-- Time-based triggering policy: The log file is rotated based on time -->
                 <TimeBasedTriggeringPolicy modulate="true" />
             </Policies>
         </RollingFile>
-
     </Appenders>
 
     <!-- Loggers section, where loggers and their levels are defined -->
     <Loggers>
-
         <!-- Root: The root logger that captures all logs -->
         <Root level="debug">
             <!-- Reference to the appenders defined earlier -->
             <AppenderRef ref="Console" />
             <AppenderRef ref="RollingFile" />
         </Root>
-
     </Loggers>
 </Configuration>

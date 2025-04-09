@@ -27,7 +27,7 @@ import java.net.Socket;
  *         this.serviceRegister = serviceManager;
  *     }
  *
- *     \@Override
+ *     @Override
  *     public void listen(String message) {
  *         CommandProcessor commandProcessor = getServiceRegister().getService(CommandProcessor.class);
  *         if (!commandProcessor.processCommand(message, this)) {

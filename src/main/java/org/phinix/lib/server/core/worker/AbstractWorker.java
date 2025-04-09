@@ -22,16 +22,20 @@ import java.net.Socket;
  * <pre>{@code
  * public class ClientHandler extends AbstractWorker {
  *
- *     public ClientHandler(Socket socket, ServiceManager serviceManager) throws IOException {
+ *     public ClientHandler(Socket socket, ServiceManager serviceManager)
+ *     throws IOException {
  *         super(socket, serviceManager);
  *         this.serviceRegister = serviceManager;
  *     }
  *
  *     @Override
  *     public void listen(String message) {
- *         CommandProcessor commandProcessor = getServiceRegister().getService(CommandProcessor.class);
+ *         CommandProcessor commandProcessor =
+ *         getServiceRegister().getService(CommandProcessor.class);
  *         if (!commandProcessor.processCommand(message, this)) {
- *             getMessagesManager().sendMessage(getClientAddress() + ": " + message);
+ *             getMessagesManager().sendMessage(
+ *                  getClientAddress() + ": " + message
+ *             );
  *         }
  *     }
  * }

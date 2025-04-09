@@ -8,7 +8,7 @@ import java.net.Socket;
 
 /**
  * {@code WorkerFactory} interface is factory interface for creating {@link Worker} instances.
- * This interface is used for create instance of a concrete Worker class type.
+ * This interface is used for create instance of a concrete Worker class (subclass) type.
  * <p>
  * This interface implements {@code Factory Design Pattern}
  *

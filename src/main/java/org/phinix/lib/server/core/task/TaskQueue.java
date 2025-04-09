@@ -9,7 +9,7 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
- * Class representing a queue of tasks to be executed.
+ * {@code TaskQueue} class representing a queue of tasks to be executed.
  *
  * @param <M> the type of manageable component associated with the tasks
  * @see Manageable

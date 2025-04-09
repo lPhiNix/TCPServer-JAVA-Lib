@@ -35,7 +35,10 @@ import java.util.concurrent.Executors;
  *                 maxUsers,
  *                 server -> new MyServerContext((MyServer) server),
  *                 (socket, serverContext, serviceRegister) ->
- *                      new MyWorker(socket, (MyServerContext) serverContext, (AbstractServiceRegister) serviceRegister),
+ *                      new MyWorker(
+ *                          socket, (MyServerContext) serverContext,
+ *                          (AbstractServiceRegister) serviceRegister
+ *                      ),
  *                 MyServiceManager::new,
  *                 new MyTaskExecutor(new TaskQueue<>())
  *             );
@@ -47,6 +50,7 @@ import java.util.concurrent.Executors;
  * @see Manageable
  * @see Worker
  * @see WorkerFactory
+ * @see ContextFactory
  * @see AbstractServiceRegister
  * @see AbstractTaskExecutor
  */

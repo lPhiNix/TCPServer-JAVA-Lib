@@ -10,11 +10,33 @@ import java.util.List;
 import java.util.ArrayList;
 
 /**
- * Abstract class for managing the execution of multiple tasks.
+ * {@code AbstractTaskExecutor} abstract class for managing the execution of multiple tasks.
+ * <p>
+ * The key method in this class is {@link #start(M)}, which begins executing tasks asynchronously by pulling them from the
+ * task queue and starting them in their own threads. Tasks can be registered through the {@link #registerTasks(Task)} method.
+ * Additionally, the task executor can be stopped, and the number of tasks registered and running can be queried using
+ * {@link #getAmountRegisteredTasks()} and {@link #getAmountRunningTasks()}.
+ * <p>
+ * Example use:
+ * <pre>{@code
+ * public class MyTaskExecutor extends AbstractTaskExecutor<MyServer> {
+ *     @Override
+ *     protected int initTasks() {
+ *         registerTasks(new Task1<>());
+ *         registerTasks(new Task2<>());
+ *         registerTasks(new Task3<>());
+ *         registerTasks(new Task4<>());
+ *
+ *         // Return the number of registered tasks
+ *         return getAmountRegisteredTasks();
+ *     }
+ * }
+ * }
  *
  * @param <M> the type of manageable component associated with the tasks
  * @see Manageable
  */
+
 public abstract class AbstractTaskExecutor<M extends Manageable> {
     private static final Logger logger = LogManager.getLogger();
 

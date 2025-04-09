@@ -4,10 +4,17 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.phinix.lib.server.core.Manageable;
+import org.phinix.lib.server.core.task.AbstractTaskExecutor;
 import org.phinix.lib.server.core.task.Task;
 
 /**
  * Abstract class representing a task that executes once with delays before and after processing.
+ * <p>
+ * This class extends from {@link Task} and it can be executed by {@link AbstractTaskExecutor}.
+ * <p>
+ * This class provides an implementation of the {@link #executeAsync(M)} method, which handles the execution of the
+ * task with a delay before and after the actual work is done. The {@link #process(M)} method is still abstract and
+ * must be overridden by subclasses to define the specific work that needs to be performed.
  *
  * @param <M> the type of manageable component associated with the task
  * @see Manageable

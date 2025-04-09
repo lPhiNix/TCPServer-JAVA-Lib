@@ -3,7 +3,9 @@ package org.phinix.lib.common.socket;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
 import org.phinix.lib.server.core.worker.Worker;
+import org.phinix.lib.server.core.worker.AbstractWorker;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -14,7 +16,13 @@ import java.net.SocketException;
 import java.util.Collection;
 
 /**
- * Manages messages sent to and received from a client socket.
+ * {@code MessageManager} class manages messages sent to and received from a client socket.
+ * <p>
+ * This class has been implemented because encapsulate socket transference message logic and
+ * proverb more easy readability.
+ *
+ * @see Worker
+ * @see AbstractWorker
  */
 public class MessagesManager {
     private static final Logger logger = LogManager.getLogger();

@@ -1,11 +1,18 @@
 package org.phinix.lib.common.model;
 
 import org.phinix.lib.common.util.StringFormat;
+import org.phinix.lib.server.service.services.AbstractUserManager;
+import org.phinix.lib.server.service.AbstractServiceRegister;
 
 import java.util.Objects;
 
 /**
- * Abstract class representing a user with a username and password.
+ * {@code User} abstract class representing a user as account in server.
+ * <p>
+ * This class has been implemented for jobbing with {@link AbstractUserManager} service instance.
+ *
+ * @see AbstractUserManager
+ * @see AbstractServiceRegister
  */
 public abstract class User {
     protected String username; // The username of the user

@@ -8,7 +8,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**
- * Utility class for file operations such as checking existence, creating, reading, and writing files.
+ * {@code FileUtil} utility class for file operations such as checking existence, creating, reading, and writing files.
  */
 public class FileUtil {
     private static final Logger logger = LogManager.getLogger();

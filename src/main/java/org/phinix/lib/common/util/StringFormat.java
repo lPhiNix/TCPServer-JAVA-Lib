@@ -1,7 +1,7 @@
 package org.phinix.lib.common.util;
 
 /**
- * Utility class for string formatting operations.
+ * {@code StringFormat} utility class for string formatting operations.
  */
 public class StringFormat {
 

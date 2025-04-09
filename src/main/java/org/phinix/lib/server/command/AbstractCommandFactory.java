@@ -10,11 +10,33 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Abstract class for managing the registration and creation of commands.
+ * {@code AbstractCommandFactory} abstract class for managing the registration and creation of commands.
+ * <p>
+ * The main functionality includes registering commands with {@link #registerCommand(String, Class)} and creating command instances
+ * using {@link #createCommand(String)}. Commands are stored in a map where the key is the command name (a {@code String})
+ * and the value is the class type of the command.
+ * <p>
+ * Example of a generic implementation:
+ * <pre>{@code
+ * public class MyCommandFactory extends AbstractCommandFactory<MyWorker> {
+ *     @Override
+ *     protected int initCommands() {
+ *         // Create and register a sample command
+ *         registerCommand("Command1.getCommandName()", Command1.class);
+ *         registerCommand("Command2.getCommandName()", Command2.class);
+ *         registerCommand("Command3.getCommandName()", Command3.class);
+ *
+ *         // Return the number of registered commands
+ *         return getAmountRegisteredCommands();
+ *     }
+ * }
+ * }
  *
  * @param <W> the type of worker that executes the commands
  * @see Command
+ * @see Worker
  */
+
 public abstract class AbstractCommandFactory<W extends Worker> {
     private static final Logger logger = LogManager.getLogger();
 

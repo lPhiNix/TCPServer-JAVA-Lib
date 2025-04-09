@@ -1,6 +1,5 @@
 package org.phinix.example.common.game;
 
-import org.phinix.example.common.game.ScoreManager;
 import org.phinix.example.common.model.Equation;
 import org.phinix.example.server.core.thread.ClientHandler;
 import org.phinix.example.server.service.ServiceManager;
